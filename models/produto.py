@@ -4,7 +4,9 @@ from .db import Base
 
 class Product(Base):
     __tablename__ = "products"
+    
     id = Column(Integer, primary_key=True)
+    cod = Column(String, unique=True)
     name = Column(String)
-    price = Column(Float)
-    stock = Column(Integer)
+    preco = Column(Float)
+    

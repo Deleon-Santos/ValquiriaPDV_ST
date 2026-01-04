@@ -8,9 +8,9 @@ Base = declarative_base()
 
 def init_db():
     from models.user import User
-    from models.product import Product
-    from models.sale import Sale
-    from models.sale_item import SaleItem
+    from models.produto import Product
+    from models.venda import Venda
+    from models.item import Venda_Item
 
     Base.metadata.create_all(bind=engine)
 

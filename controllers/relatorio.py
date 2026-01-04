@@ -1,8 +1,8 @@
 from models.db import SessionLocal
-from models.sale import Sale
+from models.venda import Venda
 
 def listar_vendas():
     db = SessionLocal()
-    vendas = db.query(Sale).all()
+    vendas = db.query(Venda).all()
     db.close()
     return vendas

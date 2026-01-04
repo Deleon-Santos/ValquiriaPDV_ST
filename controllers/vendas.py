@@ -1,6 +1,6 @@
-from services.sale_service import register_sale
+from services.vendas_service import register_venda
 
 def finalizar_venda(cart: list):
     if not cart:
         raise ValueError("Carrinho vazio")
-    return register_sale(cart)
+    return register_venda(cart)

@@ -1,6 +1,6 @@
 from models.db import SessionLocal
 from models.user import User
-from models.product import Product
+from models.produto import Product
 
 def seed_database():
     db = SessionLocal()
@@ -20,16 +20,16 @@ def seed_database():
 
     if product_count == 0:
         produtos = [
-            Product(name="Arroz 5kg", price=25.90, stock=50),
-            Product(name="Feijão 1kg", price=8.50, stock=40),
-            Product(name="Macarrão", price=4.20, stock=60),
-            Product(name="Óleo de Soja", price=7.90, stock=30),
-            Product(name="Açúcar 1kg", price=4.80, stock=45),
-            Product(name="Café 500g", price=13.90, stock=25),
-            Product(name="Leite 1L", price=4.50, stock=80),
-            Product(name="Farinha de Trigo", price=5.20, stock=35),
-            Product(name="Biscoito", price=3.80, stock=70),
-            Product(name="Refrigerante 2L", price=9.90, stock=20),
+            Product(cod="78932321151",name="Arroz 5kg", preco=25.90),
+            Product(cod="78932321152",name="Feijão 1kg", preco=8.50),
+            Product(cod="78932321153",name="Macarrão", preco=4.20),
+            Product(cod="78932321154",name="Óleo de Soja", preco=7.90),
+            Product(cod="78932321155",name="Açúcar 1kg", preco=4.80),
+            Product(cod="78932321156",name="Café 500g", preco=13.90),
+            Product(cod="78932321157",name="Leite 1L", preco=4.50),
+            Product(cod="78932321158",name="Farinha de Trigo", preco=5.20),
+            Product(cod="78932321159",name="Biscoito", preco=3.80),
+            Product(cod="78932321150",name="Refrigerante 2L", preco=9.90),
         ]
         db.add_all(produtos)
 

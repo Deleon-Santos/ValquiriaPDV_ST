@@ -1,9 +1,9 @@
-from services.product_service import create_product, list_products
+from services.produtos_service import create_product, list_products
 
-def cadastrar_produto(name: str, price: float, stock: int):
-    if not name or price <= 0 or stock < 0:
+def cadastrar_produto(cod: str,name: str, preco: float):
+    if not name or preco <= 0 or not cod:
         raise ValueError("Dados inválidos")
-    create_product(name, price, stock)
+    create_product(cod,name,preco)
 
 def obter_produtos():
     return list_products()

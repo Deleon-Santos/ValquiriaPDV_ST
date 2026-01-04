@@ -1,10 +1,10 @@
 
 from models.db import SessionLocal
-from models.product import Product
+from models.produto import Product
 
-def create_product(name, price, stock):
+def create_product(name, preco, qtd):
     db = SessionLocal()
-    p = Product(name=name, price=price, stock=stock)
+    p = Product(name=name, preco=preco , qtd=qtd)
     db.add(p)
     db.commit()
     db.close()
