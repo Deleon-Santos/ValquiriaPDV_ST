@@ -1,35 +1,53 @@
 
+from models import db
 from models.db import SessionLocal
 from models.venda import Venda
 from models.item import Venda_Item
+from models.produto import Product
 
-def register_venda(cart):
-    db = SessionLocal()
-    total = sum(i['price']*i['qty'] for i in cart)
-    sale = Venda(total=total)
-    db.add(Venda_Item)
-    db.commit()
-    for i in cart:
-        db.add(Venda_Item(sale_id=sale.id, product_id=i['id'], quantity=i['qty']))
-    db.commit()
-    db.close()
-    return sale.id, total
-
-# services.py
 
 
 def validar_codigo(cod):
-    # return buscar_produto(cod)
-    pass
-def criar_item(cod, qtd):
-    # produto = buscar_produto(cod)
-    # if not produto:
-    #     return None
-    pass
+    db = SessionLocal()
+    
+    try:
+        produto = db.query(Product).filter(Product.cod == cod).first()
+        return produto
+    finally:
+        db.close()
 
-    # return ItemVenda(
-    #     cod=cod,
-    #     descricao=produto["descricao"],
-    #     preco=produto["preco"],
-    #     qtd=qtd
-    # )
+
+
+def criar_item(produto, qtd):
+    return Venda_Item(
+        cod=produto.cod,
+        descricao=produto.name,
+        preco=produto.preco,
+        qtd=qtd,
+        total=produto.preco * qtd
+    )
+
+def register_venda(cart):
+    # db = SessionLocal()
+    # try:
+    #     total = sum(i["preco"] * i["qtd"] for i in cart)
+
+    #     venda = Venda(total=total)
+    #     db.add(venda)
+    #     db.commit()
+    #     db.refresh(venda)
+
+    #     for item in cart:
+    #         db.add(
+    #             Venda_Item(
+    #                 sale_id=venda.id,
+    #                 product_id=item["id"],
+    #                 quantity=item["qtd"]
+    #             )
+    #         )
+
+    #     db.commit()
+    #     return venda.id, total
+    # finally:
+    #     db.close()
+    pass

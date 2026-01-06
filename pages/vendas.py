@@ -39,24 +39,25 @@ def render():
     st.header("Venda Produto")
 
  
-    # GARANTE que existe carrinho
+   # GARANTE que existe carrinho
     if "itens" not in st.session_state:
         st.session_state.itens = []
 
-    # 🔹 DATAFRAME SEMPRE EXISTE (MESMO VAZIO)
-        df = pd.DataFrame(
-            [
-                {
-                    "Código": i.cod,
-                    "Descrição": i.descricao,
-                    "Qtd": i.qtd,
-                    "Preço": i.preco,
-                    "Total": i.total,
-                }
-                for i in st.session_state.itens
-            ],
-            columns=["Código", "Descrição", "Qtd", "Preço", "Total"]
-        )
+    # 🔹 DATAFRAME SEMPRE EXISTE
+    df = pd.DataFrame(
+        [
+            {
+                "Código": i.cod,
+                "Descrição": i.descricao,
+                "Qtd": i.qtd,
+                "Preço": i.preco,
+                "Total": i.total,
+            }
+            for i in st.session_state.itens
+        ],
+        columns=["Código", "Descrição", "Qtd", "Preço", "Total"]
+    )
+
 
 
    
@@ -67,16 +68,48 @@ def render():
     with col_esq:
         
 
-        cod = st.text_input("Código EAN")
+      
 
-        if cod:
-            produto = validar_codigo(cod)
-            if produto:
-                st.success(f"Produto: {produto['descricao']}")
-                st.session_state.produto_encontrado = produto
-            else:
-                st.error("Produto não encontrado")
+        cod = st.text_input(
+        "Código EAN",
+        key="ean_input"
+    )
 
+    if cod:
+        produto = validar_codigo(cod)
+
+        if not produto:
+            st.error("Produto não encontrado")
+
+        else:
+            # Mostra descrição
+            st.markdown("### Produto")
+            st.text_input(
+                label="Descrição",
+                value=produto.descricao,
+                disabled=True,
+                label_visibility="collapsed"
+            )
+
+            # Quantidade (CENTRO)
+            qtd = st.number_input(
+                "Quantidade",
+                min_value=1,
+                step=1,
+                value=1,
+                key="qtd_input"
+            )
+
+            # ENTER = adicionar
+            if st.button("Adicionar", use_container_width=True):
+                item = criar_item(produto, qtd)
+                st.session_state.itens.append(item)
+
+                # limpa inputs
+                st.session_state.ean_input = ""
+                st.session_state.qtd_input = 1
+
+                st.rerun()
         # ===== CAMPOS DE VALORES (VISOR DO CAIXA) =====
         
 
@@ -177,11 +210,32 @@ def render():
 
         grid_options = gb.build()
 
-        AgGrid(
+        grid_response = AgGrid(
             df,
             gridOptions=grid_options,
             height=420,
             fit_columns_on_grid_load=True,
             theme="balham",
+            update_mode=GridUpdateMode.VALUE_CHANGED,
+            data_return_mode="AS_INPUT",
             key="grid_vendas"
         )
+        df_editado = grid_response["data"]
+
+        # Recalcula total
+        df_editado["Total"] = df_editado["Preço"] * df_editado["Qtd"]
+
+        # Atualiza session_state.itens
+        st.session_state.itens = [
+            criar_item(
+                produto=type(
+                    "P", (), {
+                        "ean": row["Código"],
+                        "descricao": row["Descrição"],
+                        "preco": row["Preço"]
+                    }
+                ),
+                qtd=int(row["Qtd"])
+            )
+            for _, row in df_editado.iterrows()
+        ]

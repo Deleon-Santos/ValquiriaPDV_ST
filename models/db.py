@@ -6,6 +6,7 @@ engine = create_engine("sqlite:///db/valquiria.db", echo=False)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
+
 def init_db():
     from models.user import User
     from models.produto import Product
