@@ -1,6 +1,6 @@
 
 import streamlit as st
-from models.db import SessionLocal
+from db.db import SessionLocal
 from models.venda import Venda
 
 def render():

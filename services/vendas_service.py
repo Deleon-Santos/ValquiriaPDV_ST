@@ -1,53 +1,83 @@
 
-from models import db
-from models.db import SessionLocal
-from models.venda import Venda
-from models.item import Venda_Item
-from models.produto import Product
+from typing import List
+from db import db
+from db.db import SessionLocal
+from models.models import Venda , Produto, Item_Venda
 
 
 
-def validar_codigo(cod):
-    db = SessionLocal()
-    
+
+
+def validar_codigo(cod: str) -> Produto | None:
+    session = SessionLocal()
     try:
-        produto = db.query(Product).filter(Product.cod == cod).first()
-        return produto
+        return session.query(Produto).filter(Produto.ean == cod).first()
     finally:
-        db.close()
+        session.close()
 
 
 
-def criar_item(produto, qtd):
-    return Venda_Item(
-        cod=produto.cod,
-        descricao=produto.name,
+
+def criar_item(produto: Produto, qtd: int) -> Item_Venda:
+    
+    return Item_Venda(
+
+        ean=produto.ean,
+        descricao=produto.descricao,
         preco=produto.preco,
         qtd=qtd,
         total=produto.preco * qtd
     )
 
-def register_venda(cart):
-    # db = SessionLocal()
-    # try:
-    #     total = sum(i["preco"] * i["qtd"] for i in cart)
+def criar_item_dto(produto: Produto, qtd: int) -> dict:
+    if produto.estoque < qtd:
+        raise ValueError("Estoque insuficiente")
 
-    #     venda = Venda(total=total)
-    #     db.add(venda)
-    #     db.commit()
-    #     db.refresh(venda)
+    return {
+        "id_produto": produto.id_produto,
+        "ean": produto.ean,
+        "descricao": produto.descricao,
+        "qtd": qtd,
+        "preco": produto.preco,
+        "total": produto.preco * qtd
+    }
 
-    #     for item in cart:
-    #         db.add(
-    #             Venda_Item(
-    #                 sale_id=venda.id,
-    #                 product_id=item["id"],
-    #                 quantity=item["qtd"]
-    #             )
-    #         )
 
-    #     db.commit()
-    #     return venda.id, total
-    # finally:
-    #     db.close()
-    pass
+def register_venda(
+    itens: List[Item_Venda],
+    id_usuario: int | None = None
+) -> tuple[int, float]:
+
+    session = SessionLocal()
+
+    try:
+        # Recarrega produtos com lock lógico
+        for item in itens:
+            produto = session.query(Produto).get(item.id_produto)
+
+            if produto.estoque < item.qtd:
+                raise ValueError(
+                    f"Estoque insuficiente para {produto.descricao}"
+                )
+
+            produto.estoque -= item.qtd
+
+        total_venda = sum(item.total for item in itens)
+
+        venda = Venda(
+            total_venda=total_venda,
+            id_usuario=id_usuario,
+            itens=itens  # relacionamento faz o resto
+        )
+
+        session.add(venda)
+        session.commit()
+
+        return venda.id_venda, total_venda
+
+    except Exception:
+        session.rollback()
+        raise
+
+    finally:
+        session.close()

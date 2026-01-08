@@ -1,6 +1,6 @@
 
 import streamlit as st
-from models.db import init_db
+from db.db import init_db
 #from pages.vendas import render
 
 

@@ -1,6 +1,6 @@
 
-from models.db import SessionLocal
-from models.produto import Product
+from db.db import SessionLocal
+from models.models import Product
 
 def create_product(name, preco, qtd):
     db = SessionLocal()

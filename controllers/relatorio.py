@@ -1,5 +1,5 @@
-from models.db import SessionLocal
-from models.venda import Venda
+from db.db import SessionLocal
+from models.models import Venda
 
 def listar_vendas():
     db = SessionLocal()

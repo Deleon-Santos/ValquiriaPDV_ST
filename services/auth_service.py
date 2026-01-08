@@ -1,5 +1,5 @@
 
-from models.db import SessionLocal
+from db.db import SessionLocal
 from models.user import User
 
 def authenticate(user, pwd):
