@@ -1,9 +1,9 @@
 
 from db.db import SessionLocal
-from models.user import User
+from models.models import Usuario
 
 def authenticate(user, pwd):
     db = SessionLocal()
-    u = db.query(User).filter_by(username=user, password=pwd).first()
+    u = db.query(Usuario).filter_by(username=user, password=pwd).first()
     db.close()
     return u

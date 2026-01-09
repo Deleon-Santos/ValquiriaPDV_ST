@@ -21,24 +21,28 @@ def render():
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-        div[data-testid="stTextInput"] input {
-            background-color: #ffffff !important;
-            border: 1.5px solid #cfcfcf !important;
-            border-radius: 8px !important;
-            padding: 12px !important;
-            font-size: 2.1rem !important;
-            text-align: right !important;
-        }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    st.header("Venda Produto")
+    # ================= FUNÇÕES =================
+    def limpar_inputs():
+        st.session_state.ean_input = ""
+        st.session_state.qtd_input = 1
 
     # ================= STATE =================
     if "itens" not in st.session_state:
         st.session_state.itens = []
+
+    if "ean_input" not in st.session_state:
+        st.session_state.ean_input = ""
+
+    if "qtd_input" not in st.session_state:
+        st.session_state.qtd_input = 1
+
+    # ================= CABEÇALHO =================
+    st.header("Venda de Produtos")
 
     # ================= ENTRADA PRODUTO =================
     cod = st.text_input("Código EAN", key="ean_input")
@@ -54,32 +58,30 @@ def render():
             "Quantidade",
             min_value=1,
             step=1,
-            value=1,
             key="qtd_input"
         )
 
-        if st.button("Adicionar", use_container_width=True):
+        if st.button("Adicionar", use_container_width=True, on_click=limpar_inputs):
             try:
                 item = criar_item_dto(produto, qtd)
                 st.session_state.itens.append(item)
-                st.session_state.ean_input = ""
-                st.session_state.qtd_input = 1
                 st.rerun()
             except ValueError as e:
                 st.error(str(e))
 
     # ================= DATAFRAME =================
-    df = pd.DataFrame(
-        st.session_state.itens,
-        columns=["ean", "descricao", "qtd", "preco", "total"]
-    ).rename(columns={
-        "ean": "Código",
-        "descricao": "Descrição",
-        "qtd": "Qtd",
-        "preco": "Preço",
-        "total": "Total"
-    })
+    df = pd.DataFrame(st.session_state.itens)
 
+    if not df.empty:
+        df = df.rename(columns={
+            "ean": "Código",
+            "descricao": "Descrição",
+            "qtd": "Qtd",
+            "preco": "Preço",
+            "total": "Total"
+        })
+
+    # ================= LAYOUT =================
     col_esq, col_dir = st.columns([1, 2])
 
     # ================= VISOR CAIXA =================
@@ -88,62 +90,59 @@ def render():
         if st.session_state.itens:
             item_atual = st.session_state.itens[-1]
             preco_unit = item_atual["preco"]
-            qtd_item = item_atual["qtd"]
             total_item = item_atual["total"]
         else:
             preco_unit = total_item = 0.0
 
         total_venda = sum(i["total"] for i in st.session_state.itens)
 
-        st.markdown("### Preço unitário")
-        st.text_input("", f"{preco_unit:.2f}", disabled=True)
-
-        st.markdown("### Total do item")
-        st.text_input("", f"{total_item:.2f}", disabled=True)
-
-        st.markdown("### Total da venda")
-        st.text_input("", f"{total_venda:.2f}", disabled=True)
+        st.metric("Preço unitário", f"R$ {preco_unit:.2f}")
+        st.metric("Total do item", f"R$ {total_item:.2f}")
+        st.metric("Total da venda", f"R$ {total_venda:.2f}")
 
     # ================= TABELA =================
     with col_dir:
 
-        gb = GridOptionsBuilder.from_dataframe(df)
+        if not df.empty:
+            gb = GridOptionsBuilder.from_dataframe(df)
 
-        gb.configure_default_column(
-            resizable=True,
-            sortable=False,
-            filter=False,
-            cellStyle={
-                "fontSize": "16px",
-                "display": "flex",
-                "alignItems": "center"
-            },
-        )
+            gb.configure_default_column(
+                resizable=True,
+                sortable=False,
+                filter=False,
+                cellStyle={
+                    "fontSize": "16px",
+                    "display": "flex",
+                    "alignItems": "center"
+                },
+            )
 
-        gb.configure_column("Qtd", editable=True)
+            gb.configure_column("Qtd", editable=True)
 
-        grid = AgGrid(
-            df,
-            gridOptions=gb.build(),
-            height=420,
-            theme="balham",
-            update_mode=GridUpdateMode.VALUE_CHANGED,
-            data_return_mode="AS_INPUT",
-            key="grid_vendas"
-        )
+            grid = AgGrid(
+                df,
+                gridOptions=gb.build(),
+                height=420,
+                theme="balham",
+                update_mode=GridUpdateMode.VALUE_CHANGED,
+                data_return_mode="AS_INPUT",
+                key="grid_vendas"
+            )
 
-        df_editado = grid["data"]
-        df_editado["Total"] = df_editado["Preço"] * df_editado["Qtd"]
+            # Atualiza itens SOMENTE após edição
+            if grid["data"] is not None:
+                df_editado = grid["data"].copy()
+                df_editado["Total"] = df_editado["Preço"] * df_editado["Qtd"]
 
-        # 🔄 Atualiza session_state SEM ORM
-        st.session_state.itens = [
-            {
-                "id_produto": row.get("id_produto"),
-                "ean": row["Código"],
-                "descricao": row["Descrição"],
-                "qtd": int(row["Qtd"]),
-                "preco": float(row["Preço"]),
-                "total": float(row["Total"]),
-            }
-            for _, row in df_editado.iterrows()
-        ]
+                st.session_state.itens = [
+                    {
+                        "ean": row["Código"],
+                        "descricao": row["Descrição"],
+                        "qtd": int(row["Qtd"]),
+                        "preco": float(row["Preço"]),
+                        "total": float(row["Total"]),
+                    }
+                    for _, row in df_editado.iterrows()
+                ]
+        else:
+            st.info("Nenhum item adicionado à venda.")

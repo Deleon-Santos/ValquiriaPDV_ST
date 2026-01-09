@@ -6,15 +6,7 @@ def seed_database():
     db = SessionLocal()
 
    
-    admin_exists = db.query(Usuario).filter_by(username="admin").first()
-    if not admin_exists:
-        admin = Usuario(
-            username="admin",
-            password="admin123",  # depois podemos criptografar
-            
-            is_admin=True
-        )
-        db.add(admin)
+    
 
     product_count = db.query(Produto).count()
 
@@ -41,5 +33,7 @@ def seed_database():
         db.add(admin)
         
 
-    db.commit()
-    db.close()
+        db.commit()
+        db.close()
+    else:
+        db.close()
