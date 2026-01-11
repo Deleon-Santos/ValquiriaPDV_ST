@@ -1,9 +1,31 @@
-from services.produtos_service import create_product, list_products
+from db.db import SessionLocal
+from models.models import Produto
 
-def cadastrar_produto(cod: str,name: str, preco: float):
-    if not name or preco <= 0 or not cod:
-        raise ValueError("Dados inválidos")
-    create_product(cod,name,preco)
 
-def obter_produtos():
-    return list_products()
+def criar_produto(ean: str, descricao: str, preco: float, estoque: int):
+    session = SessionLocal()
+
+    # verifica EAN duplicado
+    existe = session.query(Produto).filter_by(ean=ean).first()
+    if existe:
+        session.close()
+        raise ValueError("Produto já cadastrado com este EAN")
+
+    produto = Produto(
+        ean=ean,
+        descricao=descricao,
+        preco=preco,
+        estoque=estoque
+    )
+
+    session.add(produto)
+    session.commit()
+    session.close()
+    return True
+
+
+def listar_produtos():
+    session = SessionLocal()
+    produtos = session.query(Produto).all()
+    session.close()
+    return produtos
