@@ -6,7 +6,8 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
-    id_venda = iniciar_venda()
+    usuario = st.session_state.usuario_logado
+    id_venda = iniciar_venda(usuario)
     print(id_venda)
     # ================= ESTILO =================
     st.markdown(
@@ -30,10 +31,12 @@ def render():
         unsafe_allow_html=True
     )
 
-  
+    # def limpar_inputs():
+    #     st.session_state.ean_input = ""
+    #     st.session_state.qtd_input = 1
    
-    if "itens" not in st.session_state:
-        st.session_state.itens = []
+    # if "itens" not in st.session_state:
+    #     st.session_state.itens = []
 
     if "ean_input" not in st.session_state:
         st.session_state.ean_input = ""

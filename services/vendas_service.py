@@ -5,13 +5,6 @@ from controllers.vendas import criar_item
 from db.db import SessionLocal
 from models.models import Venda , Produto, Item_Venda
 
-
-
-
-
-
-
-
     
 def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
     cod=cod.strip()

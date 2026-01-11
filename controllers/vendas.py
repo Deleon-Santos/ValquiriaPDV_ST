@@ -1,26 +1,17 @@
 import datetime
-import streamlit as st
 from sqlalchemy import func
 from db.db import SessionLocal
 from models.models import Item_Venda, Produto, Usuario, Venda
-# from services.vendas_service import register_venda
 
 
 from datetime import datetime
 
-def iniciar_venda() -> int:
+def iniciar_venda(usuario: dict) -> int:
     session = SessionLocal()
     
     try:
-        
-        # user = st.session_state.get("user")
-
-        
-
-        # id_usuario = user["id"]  
-
         # verifica se já existe venda aberta
-        venda_aberta = session.query(Venda).filter(Venda.status == "aberta").first()
+        venda_aberta = session.query(Venda).filter(Venda.status == "aberta",Venda.id_usuario == usuario['id']).first()
         
         if venda_aberta:
             return venda_aberta.id_venda
@@ -30,7 +21,7 @@ def iniciar_venda() -> int:
             data_venda=datetime.now(),
             status="aberta",
             total_venda=0.0,
-            # id_usuario=id_usuario
+            id_usuario=usuario['id']
         )
 
         session.add(nova_venda)
@@ -51,7 +42,7 @@ def iniciar_venda() -> int:
 
 
 def criar_item(cod: str, qtd: int, ) -> Item_Venda | None:
-    id_venda = iniciar_venda()
+    id_venda = iniciar_venda(None)
     print(id_venda)
     session = SessionLocal()
     
@@ -67,9 +58,6 @@ def criar_item(cod: str, qtd: int, ) -> Item_Venda | None:
         novo_item = Item_Venda(
             id_venda = id_venda,
             id_produto =produto.id_produto,
-            #ean=produto.ean,
-            #descricao=produto.descricao,
-            #preco_unitario=produto.preco,
             qtd=qtd,
             total=float(produto.preco * qtd)
         )
@@ -85,7 +73,7 @@ def criar_item(cod: str, qtd: int, ) -> Item_Venda | None:
         ) or 0.0
 
         venda = session.query(Venda).get(id_venda)
-        venda.total_venda = total_venda       # ✅ agora é objeto
+        venda.total_venda = total_venda       
 
         session.commit()
         
@@ -103,7 +91,3 @@ def criar_item(cod: str, qtd: int, ) -> Item_Venda | None:
         session.close()
 
     
-# def finalizar_venda(cart: list):
-#     if not cart:
-#         raise ValueError("Carrinho vazio")
-#     return register_venda(cart)
