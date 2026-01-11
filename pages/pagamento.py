@@ -29,7 +29,7 @@ def render():
         format="%.2f"
     )
 
-    if st.button("Finalizar Pagamento"):
+    if st.button("Pagamento"):
         resultado = processar_pagamento(
             id_venda=venda.id_venda,
             total_venda=venda.total_venda,
@@ -44,3 +44,15 @@ def render():
 
             if resultado.get("troco", 0) > 0:
                 st.info(f"Troco: R$ {resultado['troco']:.2f}")
+
+            
+                # 🔥 LIMPEZA DO PDV (ESSENCIAL)
+                st.session_state.itens = []
+                st.session_state.ean_input = ""
+                st.session_state.qtd_input = 1
+
+                # opcional: força nova venda
+                if "id_venda" in st.session_state:
+                    del st.session_state.id_venda
+
+                

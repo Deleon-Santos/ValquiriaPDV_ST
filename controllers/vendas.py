@@ -7,6 +7,8 @@ from models.models import Item_Venda, Produto, Usuario, Venda
 from datetime import datetime
 
 def iniciar_venda(usuario: dict) -> int:
+    if usuario is None:
+        raise ValueError("Usuário obrigatório para iniciar venda")
     session = SessionLocal()
     
     try:
@@ -41,8 +43,8 @@ def iniciar_venda(usuario: dict) -> int:
         session.close()
 
 
-def criar_item(cod: str, qtd: int, ) -> Item_Venda | None:
-    id_venda = iniciar_venda(None)
+def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
+    id_venda = iniciar_venda(usuario)
     print(id_venda)
     session = SessionLocal()
     
