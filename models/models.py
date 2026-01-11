@@ -43,7 +43,7 @@ class Item_Venda(Base):
     id_item_venda = Column(Integer, primary_key=True, autoincrement=True)
     id_venda = Column(Integer, ForeignKey("venda.id_venda"), nullable=False)
     id_produto = Column(Integer, ForeignKey("produto.id_produto"), nullable=False)
-    #ean = Column(String, unique=True, nullable=False)
+    n_item = Column(Integer, nullable=False)
     qtd = Column(Integer, nullable=False)
     #preco_unitario = Column(Float, nullable=False)
     total = Column(Float, nullable=False)

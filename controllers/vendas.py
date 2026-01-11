@@ -56,8 +56,18 @@ def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
 
         if not produto:
             return None
+        from sqlalchemy import func
+
+        ultimo_item = (
+            session.query(func.max(Item_Venda.id_item_venda))
+            .filter(Item_Venda.id_venda == id_venda)
+            .scalar()
+        )
+
+        proximo_item = 1 if ultimo_item is None else ultimo_item + 1
 
         novo_item = Item_Venda(
+            n_item = proximo_item,
             id_venda = id_venda,
             id_produto =produto.id_produto,
             qtd=qtd,

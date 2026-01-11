@@ -24,7 +24,7 @@ def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
 
         return [
             {
-            "id_item": item.id_item_venda,
+            "id_item": item.n_item,
             "ean": item.produto.ean,
             "descricao": item.produto.descricao,
             "qtd": item.qtd,

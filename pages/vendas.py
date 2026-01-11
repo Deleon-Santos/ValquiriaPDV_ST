@@ -123,6 +123,7 @@ def render():
         
 
     # ================= TABELA =================
+    
     with col_dir:
         st.markdown(
             f"""
@@ -136,10 +137,12 @@ def render():
         if not df.empty:
             gb = GridOptionsBuilder.from_dataframe(df)
 
+            # 🔒 TODAS AS COLUNAS BLOQUEADAS
             gb.configure_default_column(
                 resizable=True,
                 sortable=False,
                 filter=False,
+                editable=False,
                 cellStyle={
                     "fontSize": "16px",
                     "display": "flex",
@@ -147,53 +150,52 @@ def render():
                 },
             )
 
-            gb.configure_column("Qtd", editable=True)
+            # 💰 FORMATAÇÃO MONETÁRIA (VISUAL)
+            gb.configure_columns(
+                ["Preço", "Total"],
+                type=["numericColumn"],
+                valueFormatter="""
+                    function(params) {
+                        if (params.value === null || params.value === undefined) {
+                            return '';
+                        }
+                        return Number(params.value).toLocaleString(
+                                'pt-BR',
+                                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                        );
+                    }
+                """,
+                cellStyle={"textAlign": "right"}
+            )
 
-            grid = AgGrid(
+            # 🖥️ RENDERIZA GRID
+            AgGrid(
                 df,
                 gridOptions=gb.build(),
-                height=420,
+                height=350,
                 theme="balham",
-                update_mode=GridUpdateMode.VALUE_CHANGED,
-                data_return_mode="AS_INPUT",
                 key="grid_vendas"
             )
 
-            # Atualiza itens SOMENTE após edição
-            if grid["data"] is not None:
-                df_editado = grid["data"].copy()
-                df_editado["Total"] = df_editado["Preço"] * df_editado["Qtd"]
-                
-                st.session_state.itens = [
-                    {
-                        "item": row['item'],
-                        "ean": row["Código"],
-                        "descricao": row["Descrição"],
-                        "qtd": int(row["Qtd"]),
-                        "preco": float(row["Preço"]),
-                        "total": float(row["Total"]),
-                    }
-                    for _, row in df_editado.iterrows()
-                ]
         else:
             st.info("Nenhum item adicionado à venda.")
+
     col1 , col2 = st.columns([3,1])
     with col1:
-        st.markdown(
-            "<div style='text-align:left; font-size:24px; font-weight:bold;'>Descrição</div>",
-            unsafe_allow_html=True
-        )
+        # st.markdown(
+        #     "<div style='text-align:left; font-size:24px; font-weight:bold;'>Descrição</div>",
+        #     unsafe_allow_html=True
+        # )
         st.markdown(
         f"<div style='text-align:left; font-size:40px; border:1px solid black; border-radius: 10px; background-color: silver ;padding:10px'>{desc_item}</div>",
         unsafe_allow_html=True
     )
 
-
     with col2:
-        st.markdown(
-            "<div style='text-align:right; font-size:24px; font-weight:bold;'>Total da Venda R$</div>",
-            unsafe_allow_html=True
-        )
+        # st.markdown(
+        #     "<div style='text-align:right; font-size:24px; font-weight:bold;'>Total da Venda R$</div>",
+        #     unsafe_allow_html=True
+        # )
         st.markdown(
             f"<div style='text-align:right; font-size:40px;border:1px solid black; border-radius: 10px; background-color: silver; padding:10px'> {total_venda:.2f}</div>",
             unsafe_allow_html=True
