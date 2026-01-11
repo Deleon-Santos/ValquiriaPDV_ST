@@ -9,6 +9,7 @@ def render():
     if st.button("Entrar"):
         if authenticate(user,pwd):
             st.session_state.logged = True
+            
             st.rerun()
         else:
             st.error("Login inválido")

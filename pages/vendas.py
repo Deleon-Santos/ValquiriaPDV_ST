@@ -1,21 +1,25 @@
 import streamlit as st
 import pandas as pd
-from services.vendas_service import validar_codigo, criar_item_dto
+from controllers.vendas import iniciar_venda
+from services.vendas_service import criar_item_dto
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
-
+    id_venda = iniciar_venda()
+    print(id_venda)
     # ================= ESTILO =================
     st.markdown(
         """
         <style>
+        input[type="text"], input[type="number"] {color:black; background-color:white; border:1px solid black;
+        }
         .stApp {
             background-image: linear-gradient(
                 rgba(255,255,255,0.80),
                 rgba(255,255,255,0.80)
             ),
-            url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlvUqwmPzAC8fI3dzUfljV3ft95DuGMFY6Uw&s");
+            url("https://img.freepik.com/fotos-gratis/abundancia-de-escolhas-de-alimentos-saudaveis-no-corredor-do-supermercado-geradas-pela-ia_188544-42447.jpg?semt=ais_hybrid&w=740&q=80");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -26,12 +30,8 @@ def render():
         unsafe_allow_html=True
     )
 
-    # ================= FUNÇÕES =================
-    def limpar_inputs():
-        st.session_state.ean_input = ""
-        st.session_state.qtd_input = 1
-
-    # ================= STATE =================
+  
+   
     if "itens" not in st.session_state:
         st.session_state.itens = []
 
@@ -41,39 +41,12 @@ def render():
     if "qtd_input" not in st.session_state:
         st.session_state.qtd_input = 1
 
-    # ================= CABEÇALHO =================
-    st.header("Venda de Produtos")
-
-    # ================= ENTRADA PRODUTO =================
-    cod = st.text_input("Código EAN", key="ean_input")
-
-    produto = None
-    if cod:
-        produto = validar_codigo(cod)
-        if not produto:
-            st.error("Produto não encontrado")
-
-    if produto:
-        qtd = st.number_input(
-            "Quantidade",
-            min_value=1,
-            step=1,
-            key="qtd_input"
-        )
-
-        if st.button("Adicionar", use_container_width=True, on_click=limpar_inputs):
-            try:
-                item = criar_item_dto(produto, qtd)
-                st.session_state.itens.append(item)
-                st.rerun()
-            except ValueError as e:
-                st.error(str(e))
-
-    # ================= DATAFRAME =================
+   
     df = pd.DataFrame(st.session_state.itens)
-
+    
     if not df.empty:
         df = df.rename(columns={
+            "id_item": "item",
             "ean": "Código",
             "descricao": "Descrição",
             "qtd": "Qtd",
@@ -86,22 +59,78 @@ def render():
 
     # ================= VISOR CAIXA =================
     with col_esq:
+        
+        #col1, col2 = st.columns([1,2])
+        try:
+            
+            # produto = None
+            codigo = st.text_input("Código EAN", key="ean_input")
+            cod= codigo
+            print(cod)
+            quantid = st.number_input(
+                "Quantidade",
+                min_value=1,
+                step=1,
+                key="qtd_input"
+            )
+            qtd = quantid
+            if st.button("Adicionar", use_container_width=True):
+                item = criar_item_dto(codigo, quantid, id_venda)
+                print(item)
+                if item:
+                    st.session_state.itens=item
+
+                    # apenas sinaliza
+                    st.session_state.limpar_inputs = True
+
+                    st.rerun()
+                else:
+                    st.error("Produto não foi localizado")
+
+        except ValueError as e:
+            st.error(str(e))
+
+
+
+
+
+# __________________________________________________________________________________________________________________
 
         if st.session_state.itens:
             item_atual = st.session_state.itens[-1]
             preco_unit = item_atual["preco"]
             total_item = item_atual["total"]
+            desc_item = item_atual["descricao"]
         else:
             preco_unit = total_item = 0.0
+            desc_item = ""
 
         total_venda = sum(i["total"] for i in st.session_state.itens)
 
-        st.metric("Preço unitário", f"R$ {preco_unit:.2f}")
-        st.metric("Total do item", f"R$ {total_item:.2f}")
-        st.metric("Total da venda", f"R$ {total_venda:.2f}")
+        st.text_input(
+            "Preço unitário",
+            value=f"R$ {preco_unit:.2f}",
+            disabled=True
+        )
+
+        st.text_input(
+            "Total do item",
+            value=f"R$ {total_item:.2f}",
+            disabled=True
+        )
+
+        
 
     # ================= TABELA =================
     with col_dir:
+        st.markdown(
+            f"""
+            <div style="text-align: right; font-size: 20px; font-weight: bold;">
+                Cupom: {id_venda:04d}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         if not df.empty:
             gb = GridOptionsBuilder.from_dataframe(df)
@@ -133,9 +162,10 @@ def render():
             if grid["data"] is not None:
                 df_editado = grid["data"].copy()
                 df_editado["Total"] = df_editado["Preço"] * df_editado["Qtd"]
-
+                
                 st.session_state.itens = [
                     {
+                        "item": row['item'],
                         "ean": row["Código"],
                         "descricao": row["Descrição"],
                         "qtd": int(row["Qtd"]),
@@ -146,3 +176,24 @@ def render():
                 ]
         else:
             st.info("Nenhum item adicionado à venda.")
+    col1 , col2 = st.columns([3,1])
+    with col1:
+        st.markdown(
+            "<div style='text-align:left; font-size:24px; font-weight:bold;'>Descrição</div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+        f"<div style='text-align:left; font-size:40px; border:1px solid black; border-radius: 10px; background-color: silver ;padding:10px'>{desc_item}</div>",
+        unsafe_allow_html=True
+    )
+
+
+    with col2:
+        st.markdown(
+            "<div style='text-align:right; font-size:24px; font-weight:bold;'>Total da Venda R$</div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            f"<div style='text-align:right; font-size:40px;border:1px solid black; border-radius: 10px; background-color: silver; padding:10px'> {total_venda:.2f}</div>",
+            unsafe_allow_html=True
+        )

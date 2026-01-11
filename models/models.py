@@ -33,7 +33,7 @@ class Venda(Base):
     total_venda = Column(Float, nullable=False)
     data_venda = Column(DateTime, default=datetime.utcnow)
     id_usuario = Column(Integer, ForeignKey("usuario.id_usuario"))
-    
+    status = Column(String, default="aberta")
     itens = relationship("Item_Venda", back_populates="venda",cascade="all, delete-orphan")
 
 
@@ -43,8 +43,9 @@ class Item_Venda(Base):
     id_item_venda = Column(Integer, primary_key=True, autoincrement=True)
     id_venda = Column(Integer, ForeignKey("venda.id_venda"), nullable=False)
     id_produto = Column(Integer, ForeignKey("produto.id_produto"), nullable=False)
+    #ean = Column(String, unique=True, nullable=False)
     qtd = Column(Integer, nullable=False)
-    preco_unitario = Column(Float, nullable=False)
+    #preco_unitario = Column(Float, nullable=False)
     total = Column(Float, nullable=False)
 
     venda = relationship("Venda", back_populates="itens")
