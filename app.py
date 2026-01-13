@@ -20,16 +20,18 @@ else:
     page = st.sidebar.radio("Menu", ["Home","Produtos","Vendas","Pagamento","Relatórios","Sair"])
     if page == "Home":
         from pages.home import render; render()
-    elif page == "Produtos":
-        from pages.add_produtos import render; render()
+    if page == "Produtos":
+        from pages.add_produtos import render; 
+        render()
     elif page == "Vendas":
         from pages.vendas import render; 
         render()
     elif page == "Pagamento":
-        from pages.pagamento import render
+        from pages.pagamento import render;
         render()
     elif page == "Relatórios":
-        from pages.relatorios import render; render()
+        from pages.relatorios import render; 
+        render()
     elif page == "Sair":
         st.session_state.logged = False
         

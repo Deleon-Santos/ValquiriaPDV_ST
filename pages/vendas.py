@@ -13,19 +13,22 @@ def render():
     st.markdown(
         """
         <style>
-        input[type="text"], input[type="number"] {color:black; background-color:white; border:1px solid black;
+        input[type="text"], input[type="number"] {color:ffff; background-color:white; border:1px solid black;border-radius:10px; font-size: 30rpx;backgound-color: silver;
         }
         .stApp {
-            background-image: linear-gradient(
-                rgba(255,255,255,0.80),
-                rgba(255,255,255,0.80)
-            ),
-            url("https://img.freepik.com/fotos-gratis/abundancia-de-escolhas-de-alimentos-saudaveis-no-corredor-do-supermercado-geradas-pela-ia_188544-42447.jpg?semt=ais_hybrid&w=740&q=80");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
+            backgoround-color:light-blue
+            }
+        # .stApp {
+        #     background-image: linear-gradient(
+        #         rgba(255,255,255,0.80),
+        #         rgba(255,255,255,0.80)
+        #     ),
+        #     # url("https://img.freepik.com/fotos-gratis/abundancia-de-escolhas-de-alimentos-saudaveis-no-corredor-do-supermercado-geradas-pela-ia_188544-42447.jpg?semt=ais_hybrid&w=740&q=80");
+        #     background-size: cover;
+        #     background-position: center;
+        #     background-repeat: no-repeat;
+        #     background-attachment: fixed;
+        # }
         </style>
         """,
         unsafe_allow_html=True
@@ -108,17 +111,36 @@ def render():
 
         total_venda = sum(i["total"] for i in st.session_state.itens)
 
-        st.text_input(
-            "Preço unitário",
-            value=f"R$ {preco_unit:.2f}",
-            disabled=True
+        # st.text_input(
+        #     "Preço unitário",
+        #     value=f"R$ {preco_unit:.2f}",
+        #     disabled=True
+        # )
+
+        # st.text_input(
+        #     "Total do item",
+        #     value=f"R$ {total_item:.2f}",
+        #     disabled=True
+        # )
+        st.markdown(
+            f"<div style='text-align:left; font-size:14px;padding-bottom:10px'>Preço Unitario R$</div>",
+            unsafe_allow_html=True
         )
 
-        st.text_input(
-            "Total do item",
-            value=f"R$ {total_item:.2f}",
-            disabled=True
+        st.markdown(
+            f"<div style='text-align:right; font-size:20px;border:1px solid black; border-radius: 10px; background-color: light-silver; padding:10px'> {preco_unit:.2f}</div>",
+            unsafe_allow_html=True
         )
+        st.markdown(
+            f"<div style='text-align:left; font-size:14px;padding:10px 0'>Total R$</div>",
+            unsafe_allow_html=True
+        )
+        
+        st.markdown(
+            f"<div style='text-align:right; font-size:20px;border:1px solid black; border-radius: 10px; background-color: light-silver; padding:10px; margin-bottom:20px'> {total_item:.2f}</div>",
+            unsafe_allow_html=True
+        )
+
 
         
 
@@ -127,7 +149,7 @@ def render():
     with col_dir:
         st.markdown(
             f"""
-            <div style="text-align: right; font-size: 20px; font-weight: bold;">
+            <div style="text-align: right; font-size: 15px; font-weight: bold; padding-bottom:5px;border-bottom:0px;">
                 Cupom: {id_venda:04d}
             </div>
             """,
@@ -172,7 +194,7 @@ def render():
             AgGrid(
                 df,
                 gridOptions=gb.build(),
-                height=350,
+                height=370,
                 theme="balham",
                 key="grid_vendas"
             )

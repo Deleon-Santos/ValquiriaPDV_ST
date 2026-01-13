@@ -46,13 +46,13 @@ def render():
                 st.info(f"Troco: R$ {resultado['troco']:.2f}")
 
             
-                # 🔥 LIMPEZA DO PDV (ESSENCIAL)
-                st.session_state.itens = []
-                st.session_state.ean_input = ""
-                st.session_state.qtd_input = 1
+            # 🔥 LIMPEZA DO PDV (ESSENCIAL)
+            st.session_state.itens = []
+            st.session_state.ean_input = ""
+            st.session_state.qtd_input = 1
 
-                # opcional: força nova venda
-                if "id_venda" in st.session_state:
-                    del st.session_state.id_venda
+            # opcional: força nova venda
+            if "id_venda" in st.session_state:
+                del st.session_state.id_venda
 
                 

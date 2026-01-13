@@ -59,7 +59,7 @@ def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
         from sqlalchemy import func
 
         ultimo_item = (
-            session.query(func.max(Item_Venda.id_item_venda))
+            session.query(func.max(Item_Venda.n_item))
             .filter(Item_Venda.id_venda == id_venda)
             .scalar()
         )

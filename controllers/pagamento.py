@@ -34,9 +34,11 @@ def efetuar_pagamento(
 
         if venda.status != "aberta":
             return {"status": "erro", "mensagem": "Venda já finalizada"}
-
-        # 🔒 VALIDAÇÕES
-        if forma_pagamento not in ["dinheiro", "pix", "cartao"]:
+        
+        if forma_pagamento in ["pix", "cartão"]:
+            valor_pago = total_venda
+    
+        if forma_pagamento not in ["dinheiro", "pix", "cartão"]:
             return {"status": "erro", "mensagem": "Forma de pagamento inválida"}
 
         if valor_pago < total_venda:
