@@ -29,3 +29,15 @@ def listar_produtos():
     produtos = session.query(Produto).all()
     session.close()
     return produtos
+
+
+def buscar_produto_por_descricao(descricao: str):
+    session = SessionLocal()
+    try:
+        return (
+            session.query(Produto)
+            .filter(Produto.descricao.ilike(f"%{descricao}%"))
+            .all()
+        )
+    finally:
+        session.close()

@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
+# from controllers.produto import buscar_produto_por_descricao
 from controllers.vendas import iniciar_venda
+# from pages.pesquisa import abrir_modal
 from services.vendas_service import criar_item_dto
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
+
 
 
 def render():
@@ -45,6 +48,9 @@ def render():
     if "qtd_input" not in st.session_state:
         st.session_state.qtd_input = 1
 
+    if "abrir_modal" not in st.session_state:
+        st.session_state.abrir_modal = False
+
    
     df = pd.DataFrame(st.session_state.itens)
     
@@ -64,33 +70,47 @@ def render():
     # ================= VISOR CAIXA =================
     with col_esq:
         
-        #col1, col2 = st.columns([1,2])
+        
         try:
             
             # produto = None
             codigo = st.text_input("Código EAN", key="ean_input")
             cod= codigo
             print(cod)
-            quantid = st.number_input(
+            
+            col01, col02 = st.columns([2,1])
+            with col01:
+                if st.button("Add Item", use_container_width=True):
+                    item = criar_item_dto(codigo, quantid, id_venda)
+                    print(item)
+                    if item:
+                        st.session_state.itens=item
+
+                        # apenas sinaliza
+                        st.session_state.limpar_inputs = True
+
+                        st.rerun()
+                    else:
+                        st.error("Produto não foi localizado")
+                
+                quantid = st.number_input(
                 "Quantidade",
                 min_value=1,
                 step=1,
                 key="qtd_input"
             )
             qtd = quantid
-            if st.button("Adicionar", use_container_width=True):
-                item = criar_item_dto(codigo, quantid, id_venda)
-                print(item)
-                if item:
-                    st.session_state.itens=item
+            with col02:
+                if st.button("Del Item", use_container_width=True):
+                    pass
+                st.text("Prescuisar")
+                if st.button("Buscar", use_container_width=True):
+                   pass
+                    # st.session_state.abrir_modal = True
+                    
 
-                    # apenas sinaliza
-                    st.session_state.limpar_inputs = True
-
-                    st.rerun()
-                else:
-                    st.error("Produto não foi localizado")
-
+                
+                #implementar a regra para deletar itens
         except ValueError as e:
             st.error(str(e))
 
