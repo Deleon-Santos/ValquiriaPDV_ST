@@ -121,6 +121,17 @@ def delete_item(n_item, id_venda):
             if query.first():
                 query.delete(synchronize_session=False)
                 session.commit()
+                
+                total_venda = (
+                    session.query(func.sum(Item_Venda.total))
+                    .filter(Item_Venda.id_venda == id_venda)
+                    .scalar()
+                ) or 0.0
+
+                venda = session.query(Venda).get(id_venda)
+                venda.total_venda = total_venda       
+
+                session.commit()
                 return True
             
             return False
@@ -129,3 +140,25 @@ def delete_item(n_item, id_venda):
             session.rollback() # Reverte se houver erro de rede ou banco
             print(f"Erro ao deletar item: {e}")
             return False
+        
+
+def carrinho_atual(id_venda):
+    session = SessionLocal()
+    itens = (
+                session.query(Item_Venda)
+                .join(Produto)
+                .filter(Item_Venda.id_venda == id_venda)
+                .all()
+                )
+
+    return [
+        {
+        "id_item": item.n_item,
+        "ean": item.produto.ean,
+        "descricao": item.produto.descricao,
+        "qtd": item.qtd,
+        "preco": item.produto.preco,
+        "total": item.total
+    }
+    for item in itens
+    ]

@@ -2,7 +2,7 @@ from time import sleep, time
 import streamlit as st
 import pandas as pd
 # from controllers.produto import buscar_produto_por_descricao
-from controllers.vendas import iniciar_venda
+from controllers.vendas import carrinho_atual, iniciar_venda
 # from pages.pesquisa import abrir_modal
 from services.vendas_service import criar_item_dto, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
@@ -12,6 +12,8 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 def render():
     usuario = st.session_state.usuario_logado
     id_venda = iniciar_venda(usuario)
+    
+    
     print(id_venda)
     # ================= ESTILO =================
     st.markdown(
@@ -39,7 +41,7 @@ def render():
     )
 
   
-   
+    st.session_state.itens = carrinho_atual(id_venda)
     if "itens" not in st.session_state:
         st.session_state.itens = []
 
@@ -135,8 +137,8 @@ def render():
         try:
             
             # produto = None
-            codigo = st.text_input("Código EAN", key="ean_input")
-            # cod= codigo
+            cod = st.text_input("Código EAN", key="ean_input")
+            codigo= cod
                       
             col01, col02 = st.columns([2,1])
             with col01:
@@ -146,14 +148,16 @@ def render():
                 step=1,
                 key="qtd_input"
             )
+                qtd = quantid
                 if st.button("Add Item", use_container_width=True):
-                    item = criar_item_dto(codigo, quantid, id_venda)
+                    item = criar_item_dto(codigo, qtd, id_venda)
                     print(item)
                     if item:
                         st.session_state.itens=item
 
                         # apenas sinaliza
-                        st.session_state.limpar_inputs = True
+                        # st.session_state.ean_input = ""
+                        # st.session_state.qtd_input = 1
 
                         st.rerun()
                     else:
@@ -175,11 +179,14 @@ def render():
                             if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
                                 id_para_excluir = int(item_selecionado['item'].iloc[0])
                                 print(f"lista de item para excluir {id_para_excluir}")
-                                removido = remover_item(id_para_excluir, id_venda)
-                                if removido == True:
+                                item = remover_item(id_para_excluir, id_venda)
+                                if item:
                                     print("item removido ")
-                                    st.rerun()
+                                    st.session_state.itens=item
+
                                     
+                                    st.rerun()
+
                                 else:
                                     print("item nao foi enconrado no banco de dados")
                                         # Se for lista, usa índice
@@ -220,7 +227,7 @@ def render():
             desc_item = item_atual["descricao"]
         else:
             preco_unit = total_item = 0.0
-            desc_item = ""
+            desc_item = "Nova Venda"
 
         total_venda = sum(i["total"] for i in st.session_state.itens)
 
@@ -272,7 +279,7 @@ def render():
         #     unsafe_allow_html=True
         # )
         st.markdown(
-        f"<div style='text-align:left; font-size:40px; border:1px solid black; border-radius: 10px; background-color: silver ;padding:10px'>{desc_item}</div>",
+        f"<div style='text-align:left; font-size:40px; border:1px solid black; border-radius: 10px; background-color: lightblue ;padding:10px'>{desc_item}</div>",
         unsafe_allow_html=True
     )
 
@@ -282,6 +289,6 @@ def render():
         #     unsafe_allow_html=True
         # )
         st.markdown(
-            f"<div style='text-align:right; font-size:40px;border:1px solid black; border-radius: 10px; background-color: silver; padding:10px'> {total_venda:.2f}</div>",
+            f"<div style='text-align:right; font-size:40px;border:1px solid black; border-radius: 10px; background-color: lightblue; padding:10px;font-weight: bolder'> {total_venda:.2f}</div>",
             unsafe_allow_html=True
         )

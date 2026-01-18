@@ -5,6 +5,25 @@ from db.db import init_db
 st.set_page_config(page_title="Valquíria PDV", layout="wide")
 init_db()
 
+st.markdown(
+    """
+    <style>
+    /* ===== SIDEBAR ===== */
+    section[data-testid="stSidebar"] {
+        background-color: lightblue;
+        padding: 5px;
+    }
+
+  
+    /* ===== FUNDO GERAL ===== */
+    .stApp {
+        background-color: #0000;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 if "logged" not in st.session_state:
     st.session_state.logged = False
     # st.session_state.logged = True
@@ -18,13 +37,13 @@ if not st.session_state.logged:
 
 else:
     st.sidebar.title("Valquíria PDV")
-    page = st.sidebar.radio("Menu", ["Home","Produtos","Vendas","pesquisar","Pagamento","Relatórios","Sair"])
+    page = st.sidebar.radio("Menu", ["Home","Produtos","Vendas","Pesquisar","Pagamento","Relatórios","Sair"])
     if page == "Home":
         from pages.home import render; render()
     if page == "Produtos":
         from pages.add_produtos import render; 
         render()
-    elif page == "pesquisar":
+    elif page == "Pesquisar":
         from pages.pesquisa import render;
         render()
     elif page == "Vendas":
