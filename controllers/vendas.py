@@ -103,3 +103,29 @@ def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
         session.close()
 
     
+def delete_item(n_item, id_venda):
+    """
+    Remove um item do banco de dados de forma otimizada.
+    """
+    # O 'with' garante que a sessão feche sozinha, evitando travamento do banco
+    with SessionLocal() as session:
+        try:
+            # Otimização: .delete() direto no banco é mais rápido que carregar o objeto
+            # Corrigido: Item_Venda.n_item == n_item (especifica a coluna do modelo)
+            query = session.query(Item_Venda).filter(
+                Item_Venda.n_item == n_item,
+                Item_Venda.id_venda == id_venda
+            )
+
+            # Verifica se o item existe antes de tentar deletar
+            if query.first():
+                query.delete(synchronize_session=False)
+                session.commit()
+                return True
+            
+            return False
+
+        except Exception as e:
+            session.rollback() # Reverte se houver erro de rede ou banco
+            print(f"Erro ao deletar item: {e}")
+            return False

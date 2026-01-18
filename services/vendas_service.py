@@ -1,9 +1,9 @@
 
 import streamlit as st
-from controllers.vendas import criar_item
+from controllers.vendas import criar_item, delete_item
 # from db import db
 from db.db import SessionLocal
-from models.models import Venda , Produto, Item_Venda
+from models.models import Produto, Item_Venda
 
     
 def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
@@ -37,3 +37,7 @@ def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
     finally:
         session.close()
 
+def remover_item(n_item: int, id_venda: int):
+    return delete_item(n_item , id_venda)
+    
+    

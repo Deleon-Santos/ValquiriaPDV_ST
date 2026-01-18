@@ -7,6 +7,7 @@ init_db()
 
 if "logged" not in st.session_state:
     st.session_state.logged = False
+    # st.session_state.logged = True
 
 if "cart" not in st.session_state:
     st.session_state.cart = []

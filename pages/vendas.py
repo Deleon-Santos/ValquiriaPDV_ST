@@ -1,9 +1,10 @@
+from time import sleep, time
 import streamlit as st
 import pandas as pd
 # from controllers.produto import buscar_produto_por_descricao
 from controllers.vendas import iniciar_venda
 # from pages.pesquisa import abrir_modal
-from services.vendas_service import criar_item_dto
+from services.vendas_service import criar_item_dto, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
@@ -48,8 +49,6 @@ def render():
     if "qtd_input" not in st.session_state:
         st.session_state.qtd_input = 1
 
-    if "abrir_modal" not in st.session_state:
-        st.session_state.abrir_modal = False
 
    
     df = pd.DataFrame(st.session_state.itens)
@@ -68,6 +67,68 @@ def render():
     col_esq, col_dir = st.columns([1, 2])
 
     # ================= VISOR CAIXA =================
+    with col_dir:
+        item_selecionado = None
+
+        st.markdown(
+            f"""
+            <div style="text-align: right; font-size: 15px; font-weight: bold; padding-bottom:5px;border-bottom:0px;">
+                Cupom: {id_venda:04d}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        if not df.empty:
+            gb = GridOptionsBuilder.from_dataframe(df)
+            gb.configure_selection(selection_mode="single", use_checkbox=True)
+            # 🔒 TODAS AS COLUNAS BLOQUEADAS
+            gb.configure_default_column(
+                resizable=True,
+                sortable=False,
+                filter=False,
+                editable=False,
+                cellStyle={
+                    "fontSize": "16px",
+                    "display": "flex",
+                    "alignItems": "center"
+                },
+            )
+
+            # 💰 FORMATAÇÃO MONETÁRIA (VISUAL)
+            gb.configure_columns(
+                ["Preço", "Total"],
+                type=["numericColumn"],
+                valueFormatter="""
+                    function(params) {
+                        if (params.value === null || params.value === undefined) {
+                            return '';
+                        }
+                        return Number(params.value).toLocaleString(
+                                'pt-BR',
+                                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                        );
+                    }
+                """,
+                cellStyle={"textAlign": "right"}
+            )
+
+            grid_response = AgGrid(
+                df,
+                gridOptions=gb.build(),
+                height=370,
+                theme="balham",
+                update_mode=GridUpdateMode.SELECTION_CHANGED, # Garante que o Streamlit saiba quando selecionamos algo
+                key="grid_vendas"
+            )
+            
+            # Pegar o item selecionado
+            item_selecionado = grid_response['selected_rows']
+            print(item_selecionado)
+        else:
+            st.info("Nenhum item adicionado à venda.")
+            item_selecionado = None
+
     with col_esq:
         
         
@@ -75,11 +136,16 @@ def render():
             
             # produto = None
             codigo = st.text_input("Código EAN", key="ean_input")
-            cod= codigo
-            print(cod)
-            
+            # cod= codigo
+                      
             col01, col02 = st.columns([2,1])
             with col01:
+                quantid = st.number_input(
+                "Quantidade",
+                min_value=1,
+                step=1,
+                key="qtd_input"
+            )
                 if st.button("Add Item", use_container_width=True):
                     item = criar_item_dto(codigo, quantid, id_venda)
                     print(item)
@@ -93,17 +159,44 @@ def render():
                     else:
                         st.error("Produto não foi localizado")
                 
-                quantid = st.number_input(
-                "Quantidade",
-                min_value=1,
-                step=1,
-                key="qtd_input"
-            )
-            qtd = quantid
+                
+            # qtd = quantid
             with col02:
+                st.markdown(
+                    f"<div style='text-align:left; font-size:14px;padding-bottom:5px; margin-top:0'>Excluir</div>",
+                    unsafe_allow_html=True
+                )
+                
                 if st.button("Del Item", use_container_width=True):
-                    pass
-                st.text("Prescuisar")
+                    # LÓGICA DE EXCLUSÃO
+                    if item_selecionado is not None:
+                        try:
+                            # Se for DataFrame, usa iloc
+                            if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
+                                id_para_excluir = int(item_selecionado['item'].iloc[0])
+                                print(f"lista de item para excluir {id_para_excluir}")
+                                removido = remover_item(id_para_excluir, id_venda)
+                                if removido == True:
+                                    print("item removido ")
+                                    st.rerun()
+                                    
+                                else:
+                                    print("item nao foi enconrado no banco de dados")
+                                        # Se for lista, usa índice
+                            else:
+                               
+                                print(f"item para excluir não localizado na lista de iten do df {id_para_excluir}")
+                                
+                            # Chama a função de remoção
+                            
+                            
+                        except Exception as e:
+                            st.error(f"Erro ao capturar item: {e}")
+                            
+                    else:
+                        print("o item selecionado não foi encontrado")
+                    
+                
                 if st.button("Buscar", use_container_width=True):
                    pass
                     # st.session_state.abrir_modal = True
@@ -166,61 +259,11 @@ def render():
 
     # ================= TABELA =================
     
-    with col_dir:
-        st.markdown(
-            f"""
-            <div style="text-align: right; font-size: 15px; font-weight: bold; padding-bottom:5px;border-bottom:0px;">
-                Cupom: {id_venda:04d}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+   
 
-        if not df.empty:
-            gb = GridOptionsBuilder.from_dataframe(df)
 
-            # 🔒 TODAS AS COLUNAS BLOQUEADAS
-            gb.configure_default_column(
-                resizable=True,
-                sortable=False,
-                filter=False,
-                editable=False,
-                cellStyle={
-                    "fontSize": "16px",
-                    "display": "flex",
-                    "alignItems": "center"
-                },
-            )
 
-            # 💰 FORMATAÇÃO MONETÁRIA (VISUAL)
-            gb.configure_columns(
-                ["Preço", "Total"],
-                type=["numericColumn"],
-                valueFormatter="""
-                    function(params) {
-                        if (params.value === null || params.value === undefined) {
-                            return '';
-                        }
-                        return Number(params.value).toLocaleString(
-                                'pt-BR',
-                                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                        );
-                    }
-                """,
-                cellStyle={"textAlign": "right"}
-            )
 
-            # 🖥️ RENDERIZA GRID
-            AgGrid(
-                df,
-                gridOptions=gb.build(),
-                height=370,
-                theme="balham",
-                key="grid_vendas"
-            )
-
-        else:
-            st.info("Nenhum item adicionado à venda.")
 
     col1 , col2 = st.columns([3,1])
     with col1:
