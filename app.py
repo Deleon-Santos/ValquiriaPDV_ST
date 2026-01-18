@@ -37,14 +37,11 @@ if not st.session_state.logged:
 
 else:
     st.sidebar.title("Valquíria PDV")
-    page = st.sidebar.radio("Menu", ["Home","Produtos","Vendas","Pesquisar","Pagamento","Relatórios","Sair"])
+    page = st.sidebar.radio("Menu", ["Home","Produtos","Vendas","Pagamento","Sair"])
     if page == "Home":
         from pages.home import render; render()
     if page == "Produtos":
         from pages.add_produtos import render; 
-        render()
-    elif page == "Pesquisar":
-        from pages.pesquisa import render;
         render()
     elif page == "Vendas":
         from pages.vendas import render; 

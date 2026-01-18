@@ -41,3 +41,15 @@ def buscar_produto_por_descricao(descricao: str):
         )
     finally:
         session.close()
+
+
+def buscar_desc(descricao: str):
+    session= SessionLocal()
+    try:
+        return (
+            session.query(Produto)
+            .filter(Produto.descricao.ilike(f"%{descricao}%"))
+            .all()
+        )
+    finally:
+        session.close()
