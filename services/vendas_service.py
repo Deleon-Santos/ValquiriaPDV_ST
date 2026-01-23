@@ -9,7 +9,7 @@ from models.models import Produto, Item_Venda
 def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
     cod=cod.strip()
     usuario = st.session_state.usuario_logado
-    novo_item=criar_item(cod, qtd, usuario)
+    criar_item(cod, qtd, usuario)
     
 
     session = SessionLocal()
