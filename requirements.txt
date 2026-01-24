@@ -2,3 +2,4 @@
 streamlit
 sqlalchemy
 reportlab
+psycopg2-binary
