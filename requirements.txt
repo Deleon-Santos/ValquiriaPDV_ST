@@ -1,5 +1,8 @@
 
 streamlit
 sqlalchemy
-reportlab
 psycopg2-binary
+pandas
+reportlab
+streamlit-aggrid
+Pillow
