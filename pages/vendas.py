@@ -18,22 +18,10 @@ def render():
     st.markdown(
         """
         <style>
-        input[type="text"], input[type="number"] {color:ffff; background-color:white; border:1px solid black;border-radius:10px; font-size: 30rpx;backgound-color: silver;
+        input[type="text"], input[type="number"] {color:#ffffff; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
         }
-        .stApp {
-            backgoround-color:light-blue
-            }
-        # .stApp {
-        #     background-image: linear-gradient(
-        #         rgba(255,255,255,0.80),
-        #         rgba(255,255,255,0.80)
-        #     ),
-        #     # url("https://img.freepik.com/fotos-gratis/abundancia-de-escolhas-de-alimentos-saudaveis-no-corredor-do-supermercado-geradas-pela-ia_188544-42447.jpg?semt=ais_hybrid&w=740&q=80");
-        #     background-size: cover;
-        #     background-position: center;
-        #     background-repeat: no-repeat;
-        #     background-attachment: fixed;
-        # }
+        
+        
         </style>
         """,
         unsafe_allow_html=True
@@ -208,7 +196,7 @@ def render():
             )
 
             st.markdown(
-                f"<div style='text-align:right; font-size:20px;border:1px solid black; border-radius: 10px; background-color: light-silver; padding:10px'> {preco_unit:.2f}</div>",
+                f"<div style='text-align:right; font-size:20px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:10px'> {preco_unit:.2f}</div>",
                 unsafe_allow_html=True
             )
             st.markdown(
@@ -217,19 +205,21 @@ def render():
             )
             
             st.markdown(
-                f"<div style='text-align:right; font-size:20px;border:1px solid black; border-radius: 10px; background-color: light-silver; padding:10px; margin-bottom:20px'> {total_item:.2f}</div>",
+                f"<div style='text-align:right; font-size:20px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:10px; margin-bottom:20px'> {total_item:.2f}</div>",
                 unsafe_allow_html=True)
 
         col1 , col2 = st.columns([3,1])
         with col1:
             st.markdown(
-            f"<div style='text-align:left; font-size:40px; border:1px solid black; border-radius: 10px; background-color: lightblue ;padding:10px'>{desc_item}</div>",
+            f"<div style='text-align:left; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;padding:10px'>{desc_item}</div>",
             unsafe_allow_html=True)
 
         with col2:
             st.markdown(
-                f"<div style='text-align:right; font-size:40px;border:1px solid black; border-radius: 10px; background-color: lightblue; padding:10px;font-weight: bolder'> {total_venda:.2f}</div>",
+                f"<div style='text-align:right; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;  padding:10px;font-weight: bolder'> {total_venda:.2f}</div>",
                 unsafe_allow_html=True)
+
+
 
     with pesquisa:
         st.subheader("Pesquisar")

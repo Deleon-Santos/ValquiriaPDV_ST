@@ -3,6 +3,17 @@ import streamlit as st
 from services.produto_service import cadastrar_produto
 
 def render():
+    st.markdown(
+        """
+        <style>
+        input[type="text"], input[type="number"] {color:#ffffff; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
+        }
+        
+        
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.title("Produtos")
 
     with st.form("form_produto", clear_on_submit=True):

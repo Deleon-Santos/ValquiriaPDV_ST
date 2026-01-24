@@ -5,7 +5,18 @@ from controllers.relatorio import buscar_vendas_por_data, buscar_itens_venda
 from utils.impressao import gerar_cupom_pdf
 
 def render():
-    st.subheader("🔍 Pesquisa de Vendas")
+    st.markdown(
+        """
+        <style>
+        input[type="text"], input[type="number"] {color:#ffffff; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
+        }
+        
+        
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    st.header("🔍 Pesquisa de Vendas")
 
     data = st.date_input("Data da venda")
 
