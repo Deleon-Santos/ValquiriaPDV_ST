@@ -3,6 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 DATABASE_URL = st.secrets.get("DATABASE_URL") 
+st.write("🔎 DATABASE_URL em uso:", DATABASE_URL)
+
 if not DATABASE_URL:
 
     st.error("DATABASE_URL não configurada!")
