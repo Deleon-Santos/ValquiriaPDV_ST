@@ -2,7 +2,7 @@
 import streamlit as st
 import pandas as pd
 from controllers.relatorio import buscar_vendas_por_data, buscar_itens_venda
-from utils.pdf_generator import gerar_cupom_pdf
+from utils.impressao import gerar_cupom_pdf
 
 def render():
     st.subheader("🔍 Pesquisa de Vendas")
