@@ -15,8 +15,9 @@ if DATABASE_URL.startswith("postgres://"):
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"sslmode": "require"},
-    pool_pre_ping=True
+    pool_pre_ping=True,
+    pool_size=5,
+    max_overflow=10
 )
 
 # engine = create_engine("sqlite:///db/valquiria.db", echo=False)
