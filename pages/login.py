@@ -8,7 +8,7 @@ def render():
     <style>
     /* Estilo geral dos inputs */
     input[type="text"], input[type="password"] {
-        color: #000000;
+        color: black;
         background-color: #FFFFFF;
         border-bottom: 3px solid silver;
         border-right: 3px solid silver;

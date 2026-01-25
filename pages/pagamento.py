@@ -5,7 +5,7 @@ def render():
     st.markdown(
         """
         <style>
-        input[type="text"], input[type="number"] {color:#ffffff; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
+        input[type="text"], input[type="number"] {color:black; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
         }
         
         

@@ -18,7 +18,7 @@ def render():
     st.markdown(
         """
         <style>
-        input[type="text"], input[type="number"] {color:#ffffff; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
+        input[type="text"], input[type="number"] {color:black; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
         }
         
         
@@ -46,10 +46,10 @@ def render():
         if not df.empty:
             df = df.rename(columns={
                 "id_item": "item",
-                "ean": "Código",
+                # "ean": "Código",
                 "descricao": "Descrição",
                 "qtd": "Qtd",
-                "preco": "Preço",
+                # "preco": "Preço",
                 "total": "Total"
             })
 
@@ -87,7 +87,7 @@ def render():
 
                 # FORMATAÇÃO MONETÁRIA (VISUAL)
                 gb.configure_columns(
-                    ["Preço", "Total"],
+                    ["Total"],
                     type=["numericColumn"],
                     valueFormatter="""
                         function(params) {
