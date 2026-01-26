@@ -138,7 +138,6 @@ def delete_item(n_item, id_venda):
 
         except Exception as e:
             session.rollback() # Reverte se houver erro de rede ou banco
-            print(f"Erro ao deletar item: {e}")
             return False
         
 

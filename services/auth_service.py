@@ -1,6 +1,6 @@
-# services/auth_service.py
 from db.db import SessionLocal
 from models.models import Usuario
+
 
 def authenticate(user, pwd):
     db = SessionLocal()

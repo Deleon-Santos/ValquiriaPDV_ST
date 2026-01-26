@@ -18,7 +18,8 @@ engine = create_engine(
     max_overflow=10
 )
 
-# engine = create_engine("sqlite:///db/valquiria.db", echo=False)
+
+#engine = create_engine("sqlite:///db/valquiria.db", echo=False)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 

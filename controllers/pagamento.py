@@ -2,7 +2,6 @@ from db.db import SessionLocal
 from models.models import Venda
 
 
-
 def buscar_venda_aberta(id_usuario: int):
     session = SessionLocal()
     try:
@@ -52,7 +51,7 @@ def efetuar_pagamento(
         if forma_pagamento == "dinheiro":
             troco = round(valor_pago - total_venda, 2)
 
-        # 💾 ATUALIZA VENDA
+        # Atualiza a venda
         venda.status = "pago"
         venda.total_venda = total_venda
 

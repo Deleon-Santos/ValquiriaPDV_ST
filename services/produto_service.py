@@ -15,7 +15,5 @@ def cadastrar_produto(ean: str, descricao: str, preco: float, estoque: int):
     return criar_produto(ean, descricao, preco, estoque)
     
 
-
-
 def obter_produtos():
     return listar_produtos()

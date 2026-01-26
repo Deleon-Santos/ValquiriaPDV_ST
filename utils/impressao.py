@@ -2,8 +2,8 @@ from reportlab.lib.pagesizes import portrait
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 
-def gerar_cupom_pdf(id_venda, itens):
-    
+
+def gerar_cupom_pdf(id_venda, itens): 
     largura_cupom = 80 * mm
     altura_estimada = 150 * mm + (len(itens) * 5 * mm) # Dinâmico
     

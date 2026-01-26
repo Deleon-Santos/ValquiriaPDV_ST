@@ -1,5 +1,6 @@
 from controllers.pagamento import buscar_venda_aberta, efetuar_pagamento
 
+
 def processar_pagamento(
     id_venda: int,
     total_venda: float,

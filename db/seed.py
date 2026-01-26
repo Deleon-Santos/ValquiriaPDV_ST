@@ -5,11 +5,7 @@ from models.models import Produto, Usuario
 def seed_database():
     db = SessionLocal()
 
-   
-    
-
     product_count = db.query(Produto).count()
-
     if product_count == 0:
         produtos = [
             Produto(ean="78932321151",descricao="Arroz 5kg", preco=25.90, estoque = 20),
@@ -31,8 +27,6 @@ def seed_database():
             is_admin=True
         )
         db.add(admin)
-        
-
         db.commit()
         db.close()
     else:

@@ -1,18 +1,8 @@
 import streamlit as st
 from services.pagamento_service import (obter_venda_aberta,processar_pagamento)
 
+
 def render():
-    st.markdown(
-        """
-        <style>
-        input[type="text"], input[type="number"] {color:black; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
-        }
-        
-        
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
     st.title("Pagamento")
 
     usuario = st.session_state.usuario_logado
@@ -56,8 +46,7 @@ def render():
             if resultado.get("troco", 0) > 0:
                 st.info(f"Troco: R$ {resultado['troco']:.2f}")
 
-            
-            # 🔥 LIMPEZA DO PDV (ESSENCIAL)
+            # Resetar estado da venda
             st.session_state.itens = []
             st.session_state.ean_input = ""
             st.session_state.qtd_input = 1

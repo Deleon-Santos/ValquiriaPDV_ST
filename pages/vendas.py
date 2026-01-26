@@ -7,27 +7,12 @@ from services.vendas_service import criar_item_dto, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
-
 def render():
+    # configurações iniciais
     usuario = st.session_state.usuario_logado
     id_venda = iniciar_venda(usuario)
-    
     venda, pesquisa = st.tabs(["Venda", "Pesquisa"])
-    print(id_venda)
-  
-    st.markdown(
-        """
-        <style>
-        input[type="text"], input[type="number"] {color:black; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
-        }
-        
-        
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
 
-  
     st.session_state.itens = carrinho_atual(id_venda)
     if "itens" not in st.session_state:
         st.session_state.itens = []
@@ -38,41 +23,39 @@ def render():
     if "qtd_input" not in st.session_state:
         st.session_state.qtd_input = 1
 
-
-    
+    # tab vendas
     with venda:
         df = pd.DataFrame(st.session_state.itens)
-        
         if not df.empty:
+
+            # Remove colunas que não quer mostrar
+            df = df.drop(columns=["ean", "preco"], errors="ignore")
             df = df.rename(columns={
-                "id_item": "item",
-                # "ean": "Código",
+                "id_item": "Item",
                 "descricao": "Descrição",
                 "qtd": "Qtd",
-                # "preco": "Preço",
-                "total": "Total"
-            })
+                "total": "Total"})
 
-        # ================= LAYOUT =================
+            # Formata coluna Total como moeda
+            df["Total"] = df["Total"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+
         col_esq, col_dir = st.columns([1, 3])
 
-
+        #coluna com a tabela de vendas
         with col_dir:
             item_selecionado = None
-
             st.markdown(
                 f"""
                 <div style="text-align: right; font-size: 15px; font-weight: bold; padding-bottom:5px;border-bottom:0px;">
                     Cupom: {id_venda:04d}
                 </div>
                 """,
-                unsafe_allow_html=True
-            )
+                unsafe_allow_html=True)
 
             if not df.empty:
                 gb = GridOptionsBuilder.from_dataframe(df)
                 gb.configure_selection(selection_mode="single", use_checkbox=True)
-                # TODAS AS COLUNAS BLOQUEADAS
                 gb.configure_default_column(
                     resizable=True,
                     sortable=False,
@@ -82,26 +65,7 @@ def render():
                         "fontSize": "16px",
                         "display": "flex",
                         "alignItems": "center"
-                    },
-                )
-
-                # FORMATAÇÃO MONETÁRIA (VISUAL)
-                gb.configure_columns(
-                    ["Total"],
-                    type=["numericColumn"],
-                    valueFormatter="""
-                        function(params) {
-                            if (params.value === null || params.value === undefined) {
-                                return '';
-                            }
-                            return Number(params.value).toLocaleString(
-                                    'pt-BR',
-                                    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                            );
-                        }
-                    """,
-                    cellStyle={"textAlign": "right"}
-                )
+                    },)
 
                 grid_response = AgGrid(
                     df,
@@ -112,13 +76,14 @@ def render():
                     key="grid_vendas"
                 )
                 
-                # Pegar o item selecionado
+                # Pegar o item selecionado para exclusão
                 item_selecionado = grid_response['selected_rows']
                 print(item_selecionado)
             else:
                 st.info("Nenhum item adicionado à venda.")
                 item_selecionado = None
 
+        # coluna com os inputs de ean e qtd
         with col_esq:      
             try:
                 cod = st.text_input("Código EAN", key="ean_input")
@@ -148,7 +113,6 @@ def render():
                         unsafe_allow_html=True)
                     
                     if st.button("Del", use_container_width=True):
-
                         if item_selecionado is not None:
                             try:
 
@@ -161,21 +125,12 @@ def render():
                                         st.session_state.itens=item 
                                         st.rerun()
 
-                                    else:
-                                        print("item nao foi enconrado no banco de dados")
-                                else:
-                                    print(f"item para excluir não localizado na lista de iten do df {id_para_excluir}")                            
-                                
                             except Exception as e:
                                 st.error(f"Erro ao capturar item: {e}")
                                 
                         else:
-                            print("o item selecionado não foi encontrado")
-                        
-                    
-                    # if st.button("Buscar", use_container_width=True):
-                    #     pass
-                    
+                            st.info(f"Selecione um item para excluir.")
+             
             except ValueError as e:
                 st.error(str(e))
 
@@ -220,12 +175,10 @@ def render():
                 unsafe_allow_html=True)
 
 
-
+    # tab pesquisa
     with pesquisa:
         st.subheader("Pesquisar")
-
         pesquisa_descricao = st.text_input("Descrição para busca")
-
         if pesquisa_descricao:
             itens = buscar_desc(pesquisa_descricao)
 
@@ -255,19 +208,12 @@ def render():
                     height=205
                 )
 
-                # ===== BOTÃO ADD =====
                 if st.button("➕ Adicionar EAN"):
                     selecionado = grid_response["selected_rows"]
-
                     if isinstance(selecionado, pd.DataFrame) and not selecionado.empty:
-
-
                         codigo = selecionado.iloc[0]["EAN"]
-                        # print(f"o item seecionado foi {st.session_state.ean_input}")
-                        
                         item = criar_item_dto(codigo, qtd, id_venda)
                         st.session_state.itens=item
-
                         st.success("EAN adicionado com sucesso!")
                         time.sleep(2)
                         st.rerun()

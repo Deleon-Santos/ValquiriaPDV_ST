@@ -4,20 +4,9 @@ import pandas as pd
 from controllers.relatorio import buscar_vendas_por_data, buscar_itens_venda
 from utils.impressao import gerar_cupom_pdf
 
-def render():
-    st.markdown(
-        """
-        <style>
-        input[type="text"], input[type="number"] {color:black; background-color:white; border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius:10px; font-size: 20px;
-        }
-        
-        
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    st.header("🔍 Pesquisa de Vendas")
 
+def render():
+    st.header("🔍 Pesquisa de Vendas")
     data = st.date_input("Data da venda")
 
     # Inicializa estados
@@ -27,11 +16,10 @@ def render():
     if "id_venda" not in st.session_state:
         st.session_state.id_venda = None
 
-    # Botão pesquisar
     if st.button("Pesquisar", width="stretch"):
         vendas = buscar_vendas_por_data(data)
         st.session_state.vendas = vendas
-        st.session_state.id_venda = None   # reseta seleção anterior
+        st.session_state.id_venda = None   
 
     # Se já temos vendas pesquisadas
     if st.session_state.vendas:

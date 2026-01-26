@@ -1,7 +1,5 @@
-
 import streamlit as st
 from controllers.vendas import carrinho_atual, criar_item, delete_item
-# from db import db
 from db.db import SessionLocal
 from models.models import Produto, Item_Venda
 
@@ -10,10 +8,7 @@ def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
     cod=cod.strip()
     usuario = st.session_state.usuario_logado
     criar_item(cod, qtd, usuario)
-    
-
     session = SessionLocal()
-
     
     try:
         itens = (
@@ -37,6 +32,7 @@ def criar_item_dto(cod: str, qtd: int, id_venda) -> list[dict]:
 
     finally:
         session.close()
+
 
 def remover_item(n_item: int, id_venda: int):
     

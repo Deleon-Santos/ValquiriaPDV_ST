@@ -1,40 +1,32 @@
-
-# pages/login.py
 import streamlit as st
 from services.auth_service import authenticate
+from PIL import Image
+
 
 def render():
-    st.markdown("""
-    <style>
-    /* Estilo geral dos inputs */
-    input[type="text"], input[type="password"] {
-        color: black;
-        background-color: #FFFFFF;
-        border-bottom: 3px solid silver;
-        border-right: 3px solid silver;
-        border-radius: 10px;
-        
-        padding: 10px;
-    }
+    col_img, col_form = st.columns([1, 1])
+
+
+    with col_img:
+        img = Image.open("./img/banner_valquiria.png")
+        st.image(img, width="stretch")
+
+
+    with col_form:
+        user = st.text_input("Usuário")
+        pwd = st.text_input("Senha", type="password")
+        st.text(".")
+        if st.button("Entrar", width="stretch"):
+            usuario = authenticate(user, pwd)
+
+            if usuario:
+                st.session_state.logged = True
+                st.session_state.usuario_logado = {
+                    "id": usuario.id_usuario,
+                    "username": usuario.username
+                }
+                st.rerun()
+            else:
+                st.error("Login inválido")
 
     
-    
-    </style>
-    """, unsafe_allow_html=True)
-    st.title("Login")
-
-    user = st.text_input("Usuário")
-    pwd = st.text_input("Senha", type="password")
-
-    if st.button("Entrar"):
-        usuario = authenticate(user, pwd)
-
-        if usuario:
-            st.session_state.logged = True
-            st.session_state.usuario_logado = {
-                "id": usuario.id_usuario,
-                "username": usuario.username
-            }
-            st.rerun()
-        else:
-            st.error("Login inválido")

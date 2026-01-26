@@ -2,11 +2,12 @@ from datetime import datetime, time
 from db.db import SessionLocal
 from models.models import Produto, Venda, Item_Venda
 
+
 def buscar_vendas_por_data(data):
     session =SessionLocal()
     try:
-        inicio_dia = datetime.combine(data, time.min)   # 2026-01-12 00:00:00
-        fim_dia    = datetime.combine(data, time.max)   # 2026-01-12 23:59:59.999999
+        inicio_dia = datetime.combine(data, time.min)   
+        fim_dia    = datetime.combine(data, time.max)   
 
         return (
             session.query(Venda)
