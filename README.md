@@ -141,4 +141,4 @@ No futuro, podem ser adicionados:
 
 ## Licença
 
-Projeto open-source disponibilizado sob a licença definida em LICENSE.
+Projeto open-source disponibilizado sob a licença definida em LICENSE **MIT**.

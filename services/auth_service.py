@@ -1,4 +1,4 @@
-from services.auth_service import autenticacao
+from controllers.auth import autenticacao
 
 def login(username: str, password: str) -> bool:
     if not username or not password:

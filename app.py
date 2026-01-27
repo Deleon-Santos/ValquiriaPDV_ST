@@ -22,16 +22,14 @@ st.markdown(
 if "logged" not in st.session_state:
     st.session_state.logged = False
 
-if "cart" not in st.session_state:
-    st.session_state.cart = []
-
 if not st.session_state.logged:
     st.session_state.usuario_logado = None
     from pages.login import render; render()
 
 else:
     st.sidebar.title("Valquíria PDV")
-    page = st.sidebar.radio("Menu", ["Produtos","Vendas","Pagamento","Relatórios","Sair"])
+    opcoes = ["Produtos","Vendas","Pagamento","Relatórios","Sair"]
+    page = st.sidebar.radio("Menu", opcoes, index=1)
     
     if page == "Vendas":
         from pages.vendas import render; 

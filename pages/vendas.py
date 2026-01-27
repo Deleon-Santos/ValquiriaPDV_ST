@@ -78,7 +78,7 @@ def render():
                 
                 # Pegar o item selecionado para exclusão
                 item_selecionado = grid_response['selected_rows']
-                print(item_selecionado)
+                
             else:
                 st.info("Nenhum item adicionado à venda.")
                 item_selecionado = None
@@ -98,9 +98,9 @@ def render():
                     key="qtd_input"
                 )
                     qtd = quantid
-                    if st.button("Add Item", use_container_width=True):
+                    if st.button("➕ Add Item", use_container_width=True):
                         item = criar_item_dto(codigo, qtd, id_venda)
-                        print(item)
+                        
                         if item:
                             st.session_state.itens=item
                             st.rerun()
@@ -112,16 +112,16 @@ def render():
                         f"<div style='text-align:left; font-size:14px;padding-bottom:5px; margin-top:0'>Excluir</div>",
                         unsafe_allow_html=True)
                     
-                    if st.button("Del", use_container_width=True):
+                    if st.button("🗑️", use_container_width=True):
                         if item_selecionado is not None:
                             try:
 
                                 if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
                                     id_para_excluir = int(item_selecionado['item'].iloc[0])
-                                    print(f"lista de item para excluir {id_para_excluir}")
+                                    
                                     item = remover_item(id_para_excluir, id_venda)
                                     if item:
-                                        print("item removido ")
+                                        
                                         st.session_state.itens=item 
                                         st.rerun()
 
@@ -208,7 +208,7 @@ def render():
                     height=205
                 )
 
-                if st.button("➕ Adicionar EAN"):
+                if st.button("➕ Adicionar"):
                     selecionado = grid_response["selected_rows"]
                     if isinstance(selecionado, pd.DataFrame) and not selecionado.empty:
                         codigo = selecionado.iloc[0]["EAN"]

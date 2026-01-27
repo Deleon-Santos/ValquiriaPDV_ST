@@ -1,12 +1,12 @@
 import streamlit as st
-from services.auth_service import authenticate
 from PIL import Image
+from services.auth_service import login
 
 
 def render():
     col_img, col_form = st.columns([1, 1])
 
-
+    
     with col_img:
         img = Image.open("./img/banner_valquiria.png")
         st.image(img, width="stretch")
@@ -17,7 +17,7 @@ def render():
         pwd = st.text_input("Senha", type="password")
         st.text(".")
         if st.button("Entrar", width="stretch"):
-            usuario = authenticate(user, pwd)
+            usuario = login(user, pwd)
 
             if usuario:
                 st.session_state.logged = True
