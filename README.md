@@ -1,6 +1,6 @@
 #  Valquíria PDV 
 ![logo valquiria](./img/banner_valquiria.png)
-Deploy [Aqui](https://valquiriapdv.streamlit.app/)
+## Deploy [Aqui](https://valquiriapdv.streamlit.app/)
 
 ---
 O Valquíria PDV ST é um sistema web/desktop leve construído com Python que oferece funcionalidades de PDV, cadastro de produtos, carrinho de vendas, fechamento de vendas, geração de PDF de cupons e relatórios. Ele foi desenvolvido com foco em simplicidade, usabilidade e aplicações em comércios de pequeno porte.
@@ -28,6 +28,7 @@ O Valquíria PDV ST é um sistema web/desktop leve construído com Python que of
 O projeto foi construído principalmente com:
 
 | Camada	| Tecnologia |
+| :--- | :--- |
 | **Linguagem** | Python |
 | **UI / Frontend** | Streamlit |
 | **Banco de Dados** | SupaBase (através de SQLAlchemy ORM) |

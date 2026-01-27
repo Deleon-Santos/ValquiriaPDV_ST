@@ -1,6 +1,11 @@
-from services.auth_service import authenticate
+from db.db import SessionLocal
+from models.models import Usuario
 
-def login(username: str, password: str) -> bool:
-    if not username or not password:
-        return False
-    return authenticate(username, password)
+
+def autenticacao(user, pwd):
+    with SessionLocal() as session:
+        return session.query(Usuario).filter_by(
+            username=user,
+            password=pwd
+        ).first()
+  

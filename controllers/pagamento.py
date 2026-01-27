@@ -3,8 +3,7 @@ from models.models import Venda
 
 
 def buscar_venda_aberta(id_usuario: int):
-    session = SessionLocal()
-    try:
+    with SessionLocal() as session:
         return (
             session.query(Venda)
             .filter(
@@ -13,9 +12,7 @@ def buscar_venda_aberta(id_usuario: int):
             )
             .first()
         )
-    finally:
-        session.close()
-
+  
 def efetuar_pagamento(
     id_venda: int,
     total_venda: float,
@@ -23,9 +20,7 @@ def efetuar_pagamento(
     valor_pago: float
 ) -> dict:
 
-    session = SessionLocal()
-
-    try:
+    with SessionLocal() as session:
         venda = session.query(Venda).filter_by(id_venda=id_venda).first()
 
         if not venda:
@@ -51,7 +46,7 @@ def efetuar_pagamento(
         if forma_pagamento == "dinheiro":
             troco = round(valor_pago - total_venda, 2)
 
-        # Atualiza a venda
+        # Atualiza o status davenda
         venda.status = "pago"
         venda.total_venda = total_venda
 
@@ -62,5 +57,4 @@ def efetuar_pagamento(
             "troco": troco
         }
 
-    finally:
-        session.close()
+   

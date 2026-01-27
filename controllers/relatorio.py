@@ -19,8 +19,7 @@ def buscar_vendas_por_data(data):
 
 
 def buscar_itens_venda(id_venda):
-    session = SessionLocal()
-    try:
+    with SessionLocal() as session:
         return (
             session.query(Item_Venda, Produto, Venda)
             .join(Produto, Produto.id_produto == Item_Venda.id_produto)
@@ -28,5 +27,4 @@ def buscar_itens_venda(id_venda):
             .filter(Item_Venda.id_venda == id_venda)
             .all()
         )
-    finally:
-        session.close()
+ 
