@@ -180,41 +180,59 @@ def render():
     # tab pesquisa
     with pesquisa:
         st.subheader("Pesquisar")
-        pesquisa_descricao = st.text_input("Descrição para busca")
-        if pesquisa_descricao:
-            dados = buscar_descricao(pesquisa_descricao)
 
-            
+        # ---------- FORM ----------
+        with st.form("form_pesquisa", clear_on_submit=True):
 
-            df = pd.DataFrame(dados)
+            pesquisa_descricao = st.text_input("Descrição para busca")
+
+            submitted = st.form_submit_button("🔍 Buscar")
+
+        # salva resultado
+        if submitted:
+            st.session_state.resultado_pesquisa = buscar_descricao(pesquisa_descricao) or []
+
+        # ---------- GRID ----------
+        dados = st.session_state.get("resultado_pesquisa", [])
+
+        if dados:
+            df = pd.DataFrame(
+                dados,
+                columns=["EAN", "Descrição", "Preço", "Estoque"]
+            )
 
             gb = GridOptionsBuilder.from_dataframe(df)
             gb.configure_selection(
                 selection_mode="single",
                 use_checkbox=True
             )
-            gb.configure_grid_options(domLayout="normal")
-            grid_options = gb.build()
 
             grid_response = AgGrid(
                 df,
-                gridOptions=grid_options,
+                gridOptions=gb.build(),
                 update_mode=GridUpdateMode.SELECTION_CHANGED,
                 fit_columns_on_grid_load=True,
                 height=205
             )
 
             if st.button("➕ Adicionar"):
-                selecionado = grid_response["selected_rows"]
-                if isinstance(selecionado, pd.DataFrame) and not selecionado.empty:
-                    codigo = selecionado.iloc[0]["EAN"]
-                    item = criar_item_dto(codigo, qtd, id_venda)
-                    st.session_state.itens=item
-                    st.success("EAN adicionado com sucesso!")
-                    time.sleep(2)
-                    st.rerun()
-                    
+                item_selecionado = grid_response["selected_rows"]
+
+                if item_selecionado is not None and not item_selecionado.empty:
+
+                    if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
+                        codigo = item_selecionado['EAN'].iloc[0]
+
+                        item = criar_item_dto(codigo, qtd, id_venda)
+                        st.session_state.itens = item
+
+                        st.success("EAN adicionado com sucesso!")
+                        time.sleep(1)
+                        st.session_state.resultado_pesquisa = []
+                        st.rerun()
+
                 else:
                     st.warning("Selecione um produto primeiro.")
-            else:
-                st.warning("Nenhum produto encontrado.")
+
+        elif submitted:
+            st.warning("Nenhum produto encontrado.")
