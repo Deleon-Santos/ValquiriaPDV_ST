@@ -1,14 +1,12 @@
-
 import time
 import streamlit as st
 import pandas as pd
-
-
 from services.vendas_service import atualizar_tabela, buscar_descricao, criar_item_dto, pegar_n_venda_atual, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
+    
     # configurações iniciais
     usuario = st.session_state.usuario_logado
     id_venda = pegar_n_venda_atual(usuario)
@@ -40,20 +38,28 @@ def render():
             # Formata coluna Total como moeda
             df["Total"] = df["Total"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
-
-        col_esq, col_dir = st.columns([1, 3])
-
-        #coluna com a tabela de vendas
-        with col_dir:
-            item_selecionado = None
-            st.markdown(
+        st.markdown(
                 f"""
                 <div style="text-align: right; font-size: 15px; font-weight: bold; padding-bottom:5px;border-bottom:0px;">
                     Cupom: {id_venda:04d}
                 </div>
                 """,
                 unsafe_allow_html=True)
+        st.markdown("""
+            <hr style="
+                margin: 10px 0;
+                border: none;
+                height: 1px;
+                background: linear-gradient(to right, transparent, #7a7a7a, transparent);
+            ">
+            """, unsafe_allow_html=True)
 
+        col_esq, col_dir = st.columns([1, 3])
+
+        #coluna com a tabela de vendas
+        with col_dir:
+            item_selecionado = None
+            
             if not df.empty:
                 gb = GridOptionsBuilder.from_dataframe(df)
                 gb.configure_selection(selection_mode="single", use_checkbox=True)
@@ -71,7 +77,7 @@ def render():
                 grid_response = AgGrid(
                     df,
                     gridOptions=gb.build(),
-                    height=370,
+                    height=365,
                     theme="balham",
                     update_mode=GridUpdateMode.SELECTION_CHANGED, # Garante que o Streamlit saiba quando selecionamos algo
                     key="grid_vendas"
@@ -85,57 +91,88 @@ def render():
                 item_selecionado = None
 
         # coluna com os inputs de ean e qtd
-        with col_esq:      
+        with col_esq:
             try:
-                cod = st.text_input("Código EAN", key="ean_input")
-                codigo= cod
-                        
-                col01, col02 = st.columns([2,1])
-                with col01:
-                    quantid = st.number_input(
-                    "Quantidade",
-                    min_value=1,
-                    step=1,
-                    key="qtd_input"
-                )
-                    qtd = quantid
-                    if st.button("➕ Add Item", use_container_width=True):
-                        item = criar_item_dto(codigo, qtd, id_venda)
-                        
-                        if item:
-                            st.session_state.itens=item
-                            st.rerun()
-                        else:
-                            st.error("Produto não foi localizado")
 
-                with col02:
-                    st.markdown(
-                        f"<div style='text-align:left; font-size:14px;padding-bottom:5px; margin-top:0'>Excluir</div>",
-                        unsafe_allow_html=True)
-                    
+                # formulario de adição
+                with st.form("form_add_item", clear_on_submit=True):
+
+                    cod = st.text_input(
+                        "EAN",
+                        key="ean_input",
+                        placeholder="789012345678",
+                    )
+
+                    col01, col02 = st.columns([1,1])
+
+                    with col01:
+                        qtd = st.number_input(
+                            "Qtd",
+                            min_value=1,
+                            step=1,
+                            key="qtd_input"
+                        )
+
+                    with col02:
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)  # alinhamento
+                        submitted = st.form_submit_button("➕Add ", use_container_width=True)
+
+                if submitted:
+
+                    if not cod.strip():
+                        st.warning("Digite ou leia um código EAN.")
+                        st.stop()
+
+                    item = criar_item_dto(cod, qtd, id_venda)
+
+                    if item:
+                        st.session_state.itens = item
+                        st.rerun()
+                    else:
+                        st.error("Produto não foi localizado")
+                
+                botao_excluir,vazio = st.columns([1,2])
+                with botao_excluir:
                     if st.button("🗑️", use_container_width=True):
-                        if item_selecionado is not None:
-                            try:
-                                print(item_selecionado)
-                                if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
-                                    id_para_excluir = int(item_selecionado['Item'].iloc[0])
-                                    print(id_para_excluir)
-                                    item = remover_item(id_para_excluir, id_venda)
-                                    if item:
-                                        print(f"Item removido com sucesso {id_para_excluir}")
-                                        st.session_state.itens=item 
-                                        st.rerun()
-                                    else:
-                                        st.error("Erro ao remover item.")
-                            except Exception as e:
-                                st.error(f"Erro ao capturar item: {e}")
-                                print(f"Erro ao capturar item selecionado: {e}")
-                        else:
-                            st.info(f"Selecione um item para excluir.")
-             
+
+                        if item_selecionado is None:
+                            st.info("Selecione um item para excluir.")
+                            st.stop()
+
+                        try:
+                            selecionado = item_selecionado
+
+                            if isinstance(selecionado, pd.DataFrame):
+                                if selecionado.empty:
+                                    st.warning("Selecione um item.")
+                                    st.stop()
+
+                                id_para_excluir = int(selecionado.iloc[0]["Item"])
+
+                            else:  # lista
+                                id_para_excluir = int(selecionado[0]["Item"])
+
+                            item = remover_item(id_para_excluir, id_venda)
+
+                            if item:
+                                st.session_state.itens = item
+                                st.rerun()
+                            else:
+                                st.error("Erro ao remover item.")
+
+                        except Exception as e:
+                            st.error(f"Erro ao capturar item: {e}")
+                            print(e)
+                with vazio:
+                    st.markdown("<br>", unsafe_allow_html=True)  # alinhamento
+                    
+
             except ValueError as e:
                 st.error(str(e))
 
+            # resumo da venda
+            preco_uni, preco_comb = st.columns([1,1])
             if st.session_state.itens:
                 item_atual = st.session_state.itens[-1]
                 preco_unit = item_atual["preco"]
@@ -146,24 +183,25 @@ def render():
                 desc_item = "Nova Venda"
 
             total_venda = sum(i["total"] for i in st.session_state.itens)
+            with preco_uni:
+                st.markdown(
+                    f"<div style='text-align:left; font-size:14px; padding:10px 0'>P.Unit R$</div>",
+                    unsafe_allow_html=True
+                )
 
-            st.markdown(
-                f"<div style='text-align:left; font-size:14px;padding-bottom:10px'>Preço Unitario R$</div>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"<div style='text-align:right; font-size:20px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:10px'> {preco_unit:.2f}</div>",
-                unsafe_allow_html=True
-            )
-            st.markdown(
-                f"<div style='text-align:left; font-size:14px;padding:10px 0'>Total R$</div>",
-                unsafe_allow_html=True
-            )
-            
-            st.markdown(
-                f"<div style='text-align:right; font-size:20px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:10px; margin-bottom:20px'> {total_item:.2f}</div>",
-                unsafe_allow_html=True)
+                st.markdown(
+                    f"<div style='text-align:right; font-size:30px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px'> {preco_unit:.2f}</div>",
+                    unsafe_allow_html=True
+                )
+            with preco_comb:
+                st.markdown(
+                    f"<div style='text-align:left; font-size:14px; padding:10px 0'>Total R$</div>",
+                    unsafe_allow_html=True
+                )
+                
+                st.markdown(
+                    f"<div style='text-align:right; font-size:30px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px; margin-bottom:5px'> {total_item:.2f}</div>",
+                    unsafe_allow_html=True)
 
         col1 , col2 = st.columns([3,1])
         with col1:
@@ -181,7 +219,6 @@ def render():
     with pesquisa:
         st.subheader("Pesquisar")
 
-        # ---------- FORM ----------
         with st.form("form_pesquisa", clear_on_submit=True):
 
             pesquisa_descricao = st.text_input("Descrição para busca")
@@ -192,7 +229,6 @@ def render():
         if submitted:
             st.session_state.resultado_pesquisa = buscar_descricao(pesquisa_descricao) or []
 
-        # ---------- GRID ----------
         dados = st.session_state.get("resultado_pesquisa", [])
 
         if dados:
@@ -212,7 +248,16 @@ def render():
                 gridOptions=gb.build(),
                 update_mode=GridUpdateMode.SELECTION_CHANGED,
                 fit_columns_on_grid_load=True,
-                height=205
+                height=200
+            )
+
+            #adiciona item atraves da pesquisa por descrição
+            quanty = st.number_input(
+                "Qtd",      
+                min_value=1,
+                step=1,     
+                value=1,
+                key="qtd_pesquisa_input"
             )
 
             if st.button("➕ Adicionar"):
@@ -223,7 +268,7 @@ def render():
                     if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
                         codigo = item_selecionado['EAN'].iloc[0]
 
-                        item = criar_item_dto(codigo, qtd, id_venda)
+                        item = criar_item_dto(codigo, quanty, id_venda)
                         st.session_state.itens = item
 
                         st.success("EAN adicionado com sucesso!")
