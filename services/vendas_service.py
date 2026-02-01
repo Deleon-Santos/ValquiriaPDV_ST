@@ -21,3 +21,7 @@ def buscar_descricao(pesquisa_descricao):
 
 def pegar_n_venda_atual(usuario: dict):
     return iniciar_venda(usuario)
+
+
+def atualizar_tabela(id_venda: int):
+    return carrinho_atual(id_venda)

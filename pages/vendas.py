@@ -2,19 +2,19 @@
 import time
 import streamlit as st
 import pandas as pd
-from controllers.produto import buscar_desc
-from controllers.vendas import carrinho_atual, iniciar_venda
-from services.vendas_service import buscar_descricao, criar_item_dto, remover_item
+
+
+from services.vendas_service import atualizar_tabela, buscar_descricao, criar_item_dto, pegar_n_venda_atual, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
     # configurações iniciais
     usuario = st.session_state.usuario_logado
-    id_venda = iniciar_venda(usuario)
+    id_venda = pegar_n_venda_atual(usuario)
     venda, pesquisa = st.tabs(["Venda", "Pesquisa"])
 
-    st.session_state.itens = carrinho_atual(id_venda)
+    st.session_state.itens = atualizar_tabela(id_venda)
     if "itens" not in st.session_state:
         st.session_state.itens = []
 
