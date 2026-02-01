@@ -1,9 +1,10 @@
+
 import time
 import streamlit as st
 import pandas as pd
 from controllers.produto import buscar_desc
 from controllers.vendas import carrinho_atual, iniciar_venda
-from services.vendas_service import criar_item_dto, remover_item
+from services.vendas_service import buscar_descricao, criar_item_dto, remover_item
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
@@ -180,45 +181,45 @@ def render():
         st.subheader("Pesquisar")
         pesquisa_descricao = st.text_input("Descrição para busca")
         if pesquisa_descricao:
-            itens = buscar_desc(pesquisa_descricao)
+            dados = buscar_descricao(pesquisa_descricao)
 
-            if itens:
-                dados = [{
-                    "EAN": i.ean,
-                    "Descrição": i.descricao,
-                    "Preço": float(i.preco),
-                    "Estoque": i.estoque
-                } for i in itens]
+            # if itens:
+            #     dados = [{
+            #         "EAN": i.ean,
+            #         "Descrição": i.descricao,
+            #         "Preço": float(i.preco),
+            #         "Estoque": i.estoque
+            #     } for i in itens]
 
-                df = pd.DataFrame(dados)
+            df = pd.DataFrame(dados)
 
-                gb = GridOptionsBuilder.from_dataframe(df)
-                gb.configure_selection(
-                    selection_mode="single",
-                    use_checkbox=True
-                )
-                gb.configure_grid_options(domLayout="normal")
-                grid_options = gb.build()
+            gb = GridOptionsBuilder.from_dataframe(df)
+            gb.configure_selection(
+                selection_mode="single",
+                use_checkbox=True
+            )
+            gb.configure_grid_options(domLayout="normal")
+            grid_options = gb.build()
 
-                grid_response = AgGrid(
-                    df,
-                    gridOptions=grid_options,
-                    update_mode=GridUpdateMode.SELECTION_CHANGED,
-                    fit_columns_on_grid_load=True,
-                    height=205
-                )
+            grid_response = AgGrid(
+                df,
+                gridOptions=grid_options,
+                update_mode=GridUpdateMode.SELECTION_CHANGED,
+                fit_columns_on_grid_load=True,
+                height=205
+            )
 
-                if st.button("➕ Adicionar"):
-                    selecionado = grid_response["selected_rows"]
-                    if isinstance(selecionado, pd.DataFrame) and not selecionado.empty:
-                        codigo = selecionado.iloc[0]["EAN"]
-                        item = criar_item_dto(codigo, qtd, id_venda)
-                        st.session_state.itens=item
-                        st.success("EAN adicionado com sucesso!")
-                        time.sleep(2)
-                        st.rerun()
-                        
-                    else:
-                        st.warning("Selecione um produto primeiro.")
+            if st.button("➕ Adicionar"):
+                selecionado = grid_response["selected_rows"]
+                if isinstance(selecionado, pd.DataFrame) and not selecionado.empty:
+                    codigo = selecionado.iloc[0]["EAN"]
+                    item = criar_item_dto(codigo, qtd, id_venda)
+                    st.session_state.itens=item
+                    st.success("EAN adicionado com sucesso!")
+                    time.sleep(2)
+                    st.rerun()
+                    
+                else:
+                    st.warning("Selecione um produto primeiro.")
             else:
                 st.warning("Nenhum produto encontrado.")

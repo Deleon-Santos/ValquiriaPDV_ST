@@ -3,6 +3,8 @@ from sqlalchemy import func
 from db.db import SessionLocal
 from models.models import Item_Venda, Produto, Usuario, Venda
 from datetime import datetime
+from sqlalchemy import func
+
 
 def iniciar_venda(usuario: dict) -> int:
     
@@ -34,25 +36,24 @@ def iniciar_venda(usuario: dict) -> int:
             raise e
 
 
-def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
-    id_venda = iniciar_venda(usuario)
-    
+def criar_item(cod: str, qtd: int, id_venda: int) -> Item_Venda | None: 
     with SessionLocal() as session:
+
         try:# valida produto NA MESMA SESSÃO
             produto = session.query(Produto).filter(Produto.ean == cod).first()
 
             if not produto:
-                return None
-            from sqlalchemy import func
+                return None          
 
+            # determina o próximo número de item
             ultimo_item = (
                 session.query(func.max(Item_Venda.n_item))
                 .filter(Item_Venda.id_venda == id_venda)
                 .scalar()
             )
-
             proximo_item = 1 if ultimo_item is None else ultimo_item + 1
 
+            # cria o item da venda
             novo_item = Item_Venda(
                 n_item = proximo_item,
                 id_venda = id_venda,
@@ -63,6 +64,7 @@ def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
             session.add(novo_item)
             session.commit()
 
+            # atualiza o total da venda
             total_venda = (
                 session.query(func.sum(Item_Venda.total))
                 .filter(Item_Venda.id_venda == id_venda)
@@ -75,7 +77,9 @@ def criar_item(cod: str, qtd: int,usuario:dict ) -> Item_Venda | None:
             
             # garante que o objeto está sincronizado
             session.refresh(novo_item)
-            return novo_item
+            
+            # retorna o item criado em formato de lista de dicionários  
+            return carrinho_atual(id_venda)
 
         except Exception as e:
             session.rollback()

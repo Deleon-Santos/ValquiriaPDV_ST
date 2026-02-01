@@ -28,19 +28,11 @@ def listar_produtos():
         return produtos
 
 
-def buscar_produto_por_descricao(descricao: str):
+def buscar_produto_por_descricao(pesquisa_descricao: str):
     with SessionLocal() as session:
         return (
             session.query(Produto)
-            .filter(Produto.descricao.ilike(f"%{descricao}%"))
+            .filter(Produto.descricao.ilike(f"%{pesquisa_descricao}%"))
             .all())
         
 
-def buscar_desc(descricao: str):
-    with SessionLocal() as session:
-        return (
-            session.query(Produto)
-            .filter(Produto.descricao.ilike(f"%{descricao}%"))
-            .all())
-        
-    
