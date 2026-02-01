@@ -16,8 +16,9 @@ def remover_item(n_item: int, id_venda: int):
 
 
 def buscar_descricao(pesquisa_descricao):
-    return (buscar_produto_por_descricao(pesquisa_descricao))
+    return buscar_produto_por_descricao(pesquisa_descricao)
 
+    
 
 def pegar_n_venda_atual(usuario: dict):
     return iniciar_venda(usuario)

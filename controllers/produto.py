@@ -30,9 +30,17 @@ def listar_produtos():
 
 def buscar_produto_por_descricao(pesquisa_descricao: str):
     with SessionLocal() as session:
-        return (
+        dados = (
             session.query(Produto)
             .filter(Produto.descricao.ilike(f"%{pesquisa_descricao}%"))
             .all())
+        if dados:
         
+            dados = [{
+                "EAN": i.ean,
+                "Descrição": i.descricao,
+                "Preço": float(i.preco),
+                "Estoque": i.estoque
+            } for i in dados]
+        return dados
 

@@ -116,19 +116,20 @@ def render():
                     if st.button("🗑️", use_container_width=True):
                         if item_selecionado is not None:
                             try:
-
+                                print(item_selecionado)
                                 if isinstance(item_selecionado, pd.DataFrame) and not item_selecionado.empty:
-                                    id_para_excluir = int(item_selecionado['item'].iloc[0])
-                                    
+                                    id_para_excluir = int(item_selecionado['Item'].iloc[0])
+                                    print(id_para_excluir)
                                     item = remover_item(id_para_excluir, id_venda)
                                     if item:
-                                        
+                                        print(f"Item removido com sucesso {id_para_excluir}")
                                         st.session_state.itens=item 
                                         st.rerun()
-
+                                    else:
+                                        st.error("Erro ao remover item.")
                             except Exception as e:
                                 st.error(f"Erro ao capturar item: {e}")
-                                
+                                print(f"Erro ao capturar item selecionado: {e}")
                         else:
                             st.info(f"Selecione um item para excluir.")
              
@@ -183,13 +184,7 @@ def render():
         if pesquisa_descricao:
             dados = buscar_descricao(pesquisa_descricao)
 
-            # if itens:
-            #     dados = [{
-            #         "EAN": i.ean,
-            #         "Descrição": i.descricao,
-            #         "Preço": float(i.preco),
-            #         "Estoque": i.estoque
-            #     } for i in itens]
+            
 
             df = pd.DataFrame(dados)
 
