@@ -116,7 +116,7 @@ def render():
                     with col02:
                         
                         st.markdown("<br>", unsafe_allow_html=True)  # alinhamento
-                        submitted = st.form_submit_button("➕Add ", use_container_width=True)
+                        submitted = st.form_submit_button("➕", use_container_width=True)
 
                 if submitted:
 
