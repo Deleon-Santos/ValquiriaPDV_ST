@@ -3,12 +3,11 @@ from db.db import SessionLocal
 from models.models import Produto, Venda, Item_Venda
 
 
-def buscar_vendas_por_data(data):
+def buscar_vendas_por_data(data_inicio, data_fim):
     session =SessionLocal()
     try:
-        inicio_dia = datetime.combine(data, time.min)   
-        fim_dia    = datetime.combine(data, time.max)   
-
+        inicio_dia = datetime.combine(data_inicio, time.min)   
+        fim_dia    = datetime.combine(data_fim, time.max)   
         return (
             session.query(Venda)
             .filter(Venda.data_venda.between(inicio_dia, fim_dia))

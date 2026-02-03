@@ -190,7 +190,7 @@ def render():
                 )
 
                 st.markdown(
-                    f"<div style='text-align:right; font-size:30px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px'> {preco_unit:.2f}</div>",
+                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px'> {preco_unit:.2f}</div>",
                     unsafe_allow_html=True
                 )
             with preco_comb:
@@ -200,7 +200,7 @@ def render():
                 )
                 
                 st.markdown(
-                    f"<div style='text-align:right; font-size:30px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px; margin-bottom:5px'> {total_item:.2f}</div>",
+                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px; margin-bottom:5px'> {total_item:.2f}</div>",
                     unsafe_allow_html=True)
 
         col1 , col2 = st.columns([3,1])

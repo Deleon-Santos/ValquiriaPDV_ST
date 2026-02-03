@@ -7,7 +7,11 @@ from utils.impressao import gerar_cupom_pdf
 
 def render():
     st.header("🔍 Pesquisa de Vendas")
-    data = st.date_input("Data da venda")
+    data1, data2 = st.columns(2)
+    with data1:
+        data_inicio = st.date_input("Data inicio")
+    with data2:
+        data_fim = st.date_input("Data fim")
 
     # Inicializa estados
     if "vendas" not in st.session_state:
@@ -17,7 +21,7 @@ def render():
         st.session_state.id_venda = None
 
     if st.button("Pesquisar", width="stretch"):
-        vendas = buscar_vendas_por_data(data)
+        vendas = buscar_vendas_por_data(data_inicio, data_fim)
         st.session_state.vendas = vendas
         st.session_state.id_venda = None   
 
