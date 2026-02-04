@@ -24,7 +24,7 @@ class Usuario(Base):
     password = Column(String, nullable=False)
     nome = Column(String, nullable=False, default="USER")
     is_admin = Column(Boolean, default=False)
-
+    venda = relationship("Venda", back_populates="usuario")
 
 class Venda(Base):
     __tablename__ = "venda"
@@ -34,8 +34,12 @@ class Venda(Base):
     data_venda = Column(DateTime, default=datetime.utcnow)
     id_usuario = Column(Integer, ForeignKey("usuario.id_usuario"))
     status = Column(String, default="aberta")
+    forma_pagamento = Column(String, default=None)
+    valor_pago = Column(Float, default=0.0)
+    troco = Column(Float, default=0.0)
     itens = relationship("Item_Venda", back_populates="venda",cascade="all, delete-orphan")
-
+    
+    usuario = relationship("Usuario")
 
 class Item_Venda(Base):
     __tablename__ = "item_venda"

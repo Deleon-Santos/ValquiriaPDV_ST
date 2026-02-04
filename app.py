@@ -12,7 +12,7 @@ st.markdown(
     <style>
 
     div[data-testid="stFormSubmitButton"] > button {
-        margin-top: 4.8px;
+        margin-top: 2px;
     }
 
     div[data-testid="stFormSubmitButton"] > button:hover {   

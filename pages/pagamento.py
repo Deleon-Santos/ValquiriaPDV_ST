@@ -35,7 +35,8 @@ def render():
             id_venda=venda.id_venda,
             total_venda=venda.total_venda,
             forma_pagamento=forma_pagamento.lower(),
-            valor_pago=valor_pago
+            valor_pago=valor_pago,
+            troco = valor_pago - venda.total_venda
         )
 
         if resultado["status"] == "erro":

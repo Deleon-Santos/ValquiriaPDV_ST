@@ -17,7 +17,8 @@ def efetuar_pagamento(
     id_venda: int,
     total_venda: float,
     forma_pagamento: str,
-    valor_pago: float
+    valor_pago: float,
+    troco: float
 ) -> dict:
 
     with SessionLocal() as session:
@@ -49,7 +50,9 @@ def efetuar_pagamento(
         # Atualiza o status davenda
         venda.status = "pago"
         venda.total_venda = total_venda
-
+        venda.forma_pagamento = forma_pagamento
+        venda.valor_pago = valor_pago
+        venda.troco = troco
         session.commit()
 
         return {

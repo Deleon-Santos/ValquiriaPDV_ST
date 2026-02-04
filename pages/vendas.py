@@ -77,7 +77,7 @@ def render():
                 grid_response = AgGrid(
                     df,
                     gridOptions=gb.build(),
-                    height=365,
+                    height=355,
                     theme="balham",
                     update_mode=GridUpdateMode.SELECTION_CHANGED, # Garante que o Streamlit saiba quando selecionamos algo
                     key="grid_vendas"

@@ -3,7 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 
 
-def gerar_cupom_pdf(id_venda, itens): 
+def gerar_cupom_pdf(id_venda,dados_venda, itens): 
     largura_cupom = 80 * mm
     altura_estimada = 150 * mm + (len(itens) * 5 * mm) # Dinâmico
     
@@ -63,7 +63,7 @@ def gerar_cupom_pdf(id_venda, itens):
         c.drawRightString(margem_esquerda + 55*mm, y, f"x{item.qtd}")
         c.drawString(margem_esquerda + 7*mm, y, produto.ean)
         c.drawRightString(margem_direita, y, f"{item.total:.2f}")
-        y -= 10
+        y -= 8
 
         if y < 15 * mm: # Margem de segurança inferior
             c.showPage()
@@ -71,15 +71,26 @@ def gerar_cupom_pdf(id_venda, itens):
             c.setFont("Helvetica", 7)
 
     # --- Totalizadores ---
-    y -= 5
+    y -= 8
     c.line(margem_esquerda, y, margem_direita, y)
     y -= 12
     c.setFont("Helvetica-Bold", 10)
     c.drawString(margem_esquerda, y, "TOTAL R$")
-    c.drawRightString(margem_direita, y, f"{venda.total_venda:.2f}")
+    c.drawRightString(margem_direita, y, f"{float(dados_venda['Total']):.2f}")
+    y -= 8
+
+    c.setFont("Helvetica", 7)
+    c.drawString(margem_esquerda, y - 12, f"Forma de Pagamento: {dados_venda['Forma Pagamento'].capitalize()}")
+    if dados_venda['Forma Pagamento'] == "dinheiro":
+        c.drawString(margem_esquerda, y - 24, f"Valor Pago: R$ {float(dados_venda['Total']):.2f}")
+        c.drawString(margem_esquerda, y - 36, f"Troco: R$ {float(dados_venda['Troco']):.2f}")   
+    y -= 4
+    c.line(margem_esquerda, y, margem_direita, y)
+    y -= 12
+    c.drawString(margem_esquerda, y - 12, f"Atendente: {dados_venda['ID Usuario']}")   
 
     # --- Rodapé ---
-    y -= 20
+    y -= 40
     c.setFont("Helvetica", 7)
     c.drawCentredString(centro, y, "Obrigado pela preferência!")
     y -= 8

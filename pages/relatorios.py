@@ -30,7 +30,11 @@ def render():
         dados = [{
             "ID Venda": v.id_venda,
             "Data": v.data_venda,
-            "Total": f"R$ {v.total_venda:.2f}"
+            "Total": f"{v.total_venda:.2f}",
+            "Troco" : f"{v.troco:.2f}",
+            "Forma Pagamento" : v.forma_pagamento,
+            "Status" : v.status,
+            "ID Usuario" : v.id_usuario
         } for v in st.session_state.vendas]
 
         df = pd.DataFrame(dados)
@@ -47,8 +51,11 @@ def render():
 
     # Se uma venda foi selecionada
     if st.session_state.id_venda:
+        dados_venda = [v for v in dados
+                        if v["ID Venda"] == st.session_state.id_venda][0]
+        #print(dados_venda)
         itens = buscar_itens_venda(st.session_state.id_venda)
-
+        
         itens_df = pd.DataFrame([{
             "n_item": item.n_item,
             "Descrição": produto.descricao,
@@ -63,5 +70,5 @@ def render():
         st.dataframe(itens_df, width="stretch")
 
         if st.button("🖨 Imprimir Cupom", width="stretch"):
-            arquivo = gerar_cupom_pdf(st.session_state.id_venda, itens)
+            arquivo = gerar_cupom_pdf(st.session_state.id_venda, dados_venda, itens)
             st.success(f"Cupom gerado: {arquivo}")
