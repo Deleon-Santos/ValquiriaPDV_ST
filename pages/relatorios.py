@@ -83,4 +83,4 @@ def render():
                             use_container_width=True
                         )
         except Exception as e:
-            st.error("Erro ao gerar cupom:")
+            st.error("Erro ao gerar cupom: Venda Aberta!")
