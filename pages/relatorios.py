@@ -31,6 +31,7 @@ def render():
             "ID Venda": v.id_venda,
             "Data": v.data_venda,
             "Total": f"{v.total_venda:.2f}",
+            "Valor Pago" : f"{v.valor_pago:.2f}",
             "Troco" : f"{v.troco:.2f}",
             "Forma Pagamento" : v.forma_pagamento,
             "Status" : v.status,
@@ -72,3 +73,12 @@ def render():
         if st.button("🖨 Imprimir Cupom", width="stretch"):
             arquivo = gerar_cupom_pdf(st.session_state.id_venda, dados_venda, itens)
             st.success(f"Cupom gerado: {arquivo}")
+            if arquivo:
+                with open(arquivo, "rb") as file:
+                    st.download_button(
+                        label="📥 Baixar Cupom",
+                        data=file,
+                        file_name="cupom.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
