@@ -82,11 +82,11 @@ def gerar_cupom_pdf(id_venda,dados_venda, itens):
     c.setFont("Helvetica", 7)
     c.drawString(margem_esquerda, y - 12, f"Forma de Pagamento: {dados_venda['Forma Pagamento'].capitalize()}")
     if dados_venda['Forma Pagamento'] == "dinheiro":
-        c.drawString(margem_esquerda, y - 24, f"Valor Pago: R$ {float(dados_venda['Total']):.2f}")
+        c.drawString(margem_esquerda, y - 24, f"Valor recebido: R$ {float(dados_venda['Total']):.2f}")
         c.drawString(margem_esquerda, y - 36, f"Troco: R$ {float(dados_venda['Troco']):.2f}")   
     y -= 4
     c.line(margem_esquerda, y, margem_direita, y)
-    y -= 12
+    y -= 8
     c.drawString(margem_esquerda, y - 12, f"Atendente: {dados_venda['ID Usuario']}")   
 
     # --- Rodapé ---
