@@ -53,7 +53,7 @@ def gerar_cupom_pdf(id_venda,dados_venda, itens):
     for item, produto, venda_obj in itens:
         # Descrição do produto (Truncada para caber)
         desc = produto.descricao[:25]
-        c.drawString(margem_esquerda, y, f"{item.id_item_venda:03d}") # Código
+        c.drawString(margem_esquerda, y, f"{item.n_item:03d}") # Código
         c.drawString(margem_esquerda + 7*mm, y, desc)
         c.drawRightString(60*mm, y, f"{produto.preco:.2f}")
         y -= 8
@@ -71,22 +71,26 @@ def gerar_cupom_pdf(id_venda,dados_venda, itens):
             c.setFont("Helvetica", 7)
 
     # --- Totalizadores ---
-    y -= 8
+    y -= 0
     c.line(margem_esquerda, y, margem_direita, y)
     y -= 12
     c.setFont("Helvetica-Bold", 10)
     c.drawString(margem_esquerda, y, "TOTAL R$")
     c.drawRightString(margem_direita, y, f"{float(dados_venda['Total']):.2f}")
-    y -= 8
+    y -= 5
 
     c.setFont("Helvetica", 7)
     c.drawString(margem_esquerda, y - 12, f"Forma de Pagamento: {dados_venda['Forma Pagamento'].capitalize()}")
     if dados_venda['Forma Pagamento'] == "dinheiro":
-        c.drawString(margem_esquerda, y - 24, f"Valor recebido: R$ {float(dados_venda['Total']):.2f}")
-        c.drawString(margem_esquerda, y - 36, f"Troco: R$ {float(dados_venda['Troco']):.2f}")   
+        # c.line(margem_esquerda, y, margem_direita, y)
+        # y -= 8
+        c.drawString(margem_esquerda, y - 20, f"Valor recebido: R$ {float(dados_venda['Valor recebido']):.2f}")
+        # c.line(margem_esquerda, y, margem_direita, y)
+        
+        c.drawRightString(margem_direita, y - 20, f"Troco: R$ {float(dados_venda['Troco']):.2f}")   
     y -= 4
     c.line(margem_esquerda, y, margem_direita, y)
-    y -= 8
+    y -= 12
     c.drawString(margem_esquerda, y - 12, f"Atendente: {dados_venda['ID Usuario']}")   
 
     # --- Rodapé ---

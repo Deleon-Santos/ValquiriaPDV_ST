@@ -27,7 +27,6 @@ def init_db():
    
     from models.models import Produto, Usuario, Venda, Item_Venda
     
-
     Base.metadata.create_all(bind=engine)
 
     from db.seed import seed_database
