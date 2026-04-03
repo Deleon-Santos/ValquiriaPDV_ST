@@ -13,8 +13,8 @@ def render():
     venda, pesquisa = st.tabs(["Venda", "Pesquisa"])
 
     st.session_state.itens = atualizar_tabela(id_venda)
-    if "itens" not in st.session_state:
-        st.session_state.itens = []
+    # if not itens in st.session_state:
+    #     st.session_state.itens = []
 
     if "ean_input" not in st.session_state:
         st.session_state.ean_input = ""
