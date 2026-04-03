@@ -16,7 +16,7 @@ engine = create_engine(
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10
-# )
+)
 
 # engine = create_engine("sqlite:///db/valquiria.db", echo=False)
 SessionLocal = sessionmaker(bind=engine)
