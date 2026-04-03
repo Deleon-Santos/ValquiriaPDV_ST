@@ -21,7 +21,7 @@ def render():
 
     if "qtd_input" not in st.session_state:
         st.session_state.qtd_input = 1
-
+    st.rerun()
     # tab vendas
     with venda:
         df = pd.DataFrame(st.session_state.itens)

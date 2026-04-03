@@ -118,23 +118,25 @@ def delete_item(n_item, id_venda):
             return False
         
 
+from sqlalchemy.orm import joinedload
+
 def carrinho_atual(id_venda):
     with SessionLocal() as session:
         itens = (
-                    session.query(Item_Venda)
-                    .join(Produto)
-                    .filter(Item_Venda.id_venda == id_venda)
-                    .all()
-                    )
+            session.query(Item_Venda)
+            .options(joinedload(Item_Venda.produto))
+            .filter(Item_Venda.id_venda == id_venda)
+            .all()
+        )
 
         return [
             {
-            "id_item": item.n_item,
-            "ean": item.produto.ean,
-            "descricao": item.produto.descricao,
-            "qtd": item.qtd,
-            "preco": item.produto.preco,
-            "total": item.total
-        }
-        for item in itens
+                "id_item": item.n_item,
+                "ean": item.produto.ean,
+                "descricao": item.produto.descricao,
+                "qtd": item.qtd,
+                "preco": item.produto.preco,
+                "total": item.total
+            }
+            for item in itens
         ]

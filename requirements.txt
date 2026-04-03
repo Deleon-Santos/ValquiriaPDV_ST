@@ -6,3 +6,4 @@ pandas
 reportlab
 streamlit-aggrid
 Pillow
+aggrid-enterprise
