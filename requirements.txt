@@ -1,8 +1,17 @@
 
-streamlit
-sqlalchemy
-psycopg2-binary
-pandas
-reportlab
-streamlit-aggrid
-Pillow
+Flask==3.1.2
+flask-cors==6.0.2
+pandas==2.3.3
+pillow==12.0.0
+psycopg2
+reportlab==4.4.7
+SQLAlchemy==2.0.45
+streamlit==1.52.2
+streamlit-aggrid==1.2.1.post2
+
+
+
+
+
+
+
