@@ -22,10 +22,10 @@ def criar_produto(ean: str, descricao: str, preco: float, estoque: int):
         return True
 
 
-def listar_produtos():
-    with SessionLocal() as session:
-        produtos = session.query(Produto).all()
-        return produtos
+# def listar_produtos():
+#     with SessionLocal() as session:
+#         produtos = session.query(Produto).all()
+#         return produtos
 
 
 def buscar_produto_por_descricao(pesquisa_descricao: str):
@@ -44,3 +44,16 @@ def buscar_produto_por_descricao(pesquisa_descricao: str):
             } for i in dados]
         return dados
 
+def listar_produtos():
+    with SessionLocal() as session:
+        produtos = session.query(Produto).all()
+
+        return [
+            {
+                "EAN": p.ean,
+                "Descrição": p.descricao,
+                "Preço": float(p.preco),
+                "Estoque": p.estoque
+            }
+            for p in produtos
+        ]
