@@ -1,13 +1,17 @@
-
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from controllers.relatorio import buscar_vendas_por_data, buscar_itens_venda
 from utils.impressao import gerar_cupom_pdf
 
 
 def render():
-    st.header("🔍 Pesquisa de Vendas")
-    data1, data2 = st.columns(2)
+    st.header("Pesquisa de Vendas")
+    tab1, tab2 = st.tabs(["Dashboard de Vendas", "Relatório Completo"])
+
+    with tab1:
+         
+        data1, data2 = st.columns(2)
     with data1:
         data_inicio = st.date_input("Data inicio")
     with data2:
@@ -67,7 +71,7 @@ def render():
             "Valor Venda": f"R$ {venda.total_venda:.2f}"
         } for item, produto, venda in itens])
 
-        st.subheader("🧾 Itens da Venda")
+        st.subheader("Itens da Venda")
         st.dataframe(itens_df, width="stretch")
         try:
             if st.button("🖨 Imprimir Cupom", width="stretch"):
@@ -84,3 +88,99 @@ def render():
                         )
         except Exception as e:
             st.error("Erro ao gerar cupom: Venda Aberta!")
+    
+
+    with tab2:
+
+        st.set_page_config(layout="wide")
+
+        st.subheader("Dashboard de Vendas")
+
+       
+        # col1, col2 = st.columns(2)
+
+        # with col1:
+        #     data_inicio = st.date_input("Data início")
+
+        # with col2:
+        #     data_fim = st.date_input("Data fim")
+
+        vendas = buscar_vendas_por_data(data_inicio, data_fim)
+
+        vendas_pag = [v for v in vendas if v.status.lower() == "pago"]
+
+        if not vendas_pag:
+            st.warning("Nenhuma venda encontrada.")
+            return
+
+       
+        total_vendido = sum(v.total_venda for v in vendas_pag)
+        qtd_vendas = len(vendas_pag)
+        ticket_medio = total_vendido / qtd_vendas if qtd_vendas else 0
+
+        kpi1, kpi2, kpi3 = st.columns(3)
+
+        kpi1.metric("💰 Total Vendido", f"R$ {total_vendido:,.2f}")
+        kpi2.metric("🧾 Nº de Vendas", qtd_vendas)
+        kpi3.metric("📈 Ticket Médio", f"R$ {ticket_medio:,.2f}")
+
+        st.divider()
+
+        aba1, aba2 = st.tabs(["📈 Vendas por Dia", "🍕 Produtos"])
+
+       
+        with aba1:
+
+            df_vendas = pd.DataFrame([{
+                "data": v.data_venda,
+                "total": float(v.total_venda)
+            } for v in vendas_pag])
+
+            df_vendas["data"] = pd.to_datetime(df_vendas["data"]).dt.date
+
+            df_agrupado = df_vendas.groupby("data")["total"].sum().reset_index()
+
+            fig = px.line(
+                df_agrupado,
+                x="data",
+                y="total",
+                markers=True,
+                title="Evolução das Vendas"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+        
+        with aba2:
+
+            itens_lista = []
+
+            for venda in vendas_pag:
+                itens = buscar_itens_venda(venda.id_venda)
+
+                for item, produto, _ in itens:
+                    itens_lista.append({
+                        "produto": produto.descricao,
+                        "quantidade": item.qtd
+                    })
+
+            df_itens = pd.DataFrame(itens_lista)
+
+            if df_itens.empty:
+                st.warning("Sem itens.")
+                return
+
+            df_top = df_itens.groupby("produto")["quantidade"].sum().reset_index()
+
+            
+            df_top = df_top.sort_values(by="quantidade", ascending=False).head(5)
+
+            fig_pizza = px.pie(
+                df_top,
+                names="produto",
+                values="quantidade",
+                title="Top 5 Produtos Mais Vendidos",
+                hole=0.4  # estilo donut (mais moderno)
+            )
+
+            st.plotly_chart(fig_pizza, use_container_width=True)

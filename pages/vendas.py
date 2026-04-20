@@ -6,7 +6,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
-    
+    st.header("Vendas PDV")
     # configurações iniciais
     usuario = st.session_state.usuario_logado
     id_venda = pegar_n_venda_atual(usuario)
@@ -217,11 +217,10 @@ def render():
 
     # tab pesquisa
     with pesquisa:
-        st.subheader("Pesquisar")
 
         with st.form("form_pesquisa", clear_on_submit=True):
 
-            pesquisa_descricao = st.text_input("Descrição para busca")
+            pesquisa_descricao = st.text_input("Busca porDescrição", placeholder="Digite parte da descrição do produto")
 
             submitted = st.form_submit_button("🔍 Buscar")
 

@@ -8,7 +8,7 @@ reportlab==4.4.7
 SQLAlchemy==2.0.45
 streamlit==1.52.2
 streamlit-aggrid==1.2.1.post2
-
+plotly==5.24.01
 
 
 

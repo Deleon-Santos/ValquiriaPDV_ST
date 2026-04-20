@@ -13,10 +13,12 @@ def render():
 
 
     with col_form:
-        user = st.text_input("Usuário")
-        pwd = st.text_input("Senha", type="password")
+        user = st.text_input("Usuário", placeholder="admin")
+        pwd = st.text_input("Senha", type="password", placeholder="admin123")
+
         st.text(".")
         if st.button("Entrar", width="stretch"):
+            user, pwd = "admin", "admin123"
             usuario = login(user, pwd)
 
             if usuario:
