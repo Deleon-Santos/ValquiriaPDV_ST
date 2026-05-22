@@ -13,11 +13,25 @@ def render():
 
 
     with col_form:
-        user = st.text_input("Usuário", placeholder="admin")
-        pwd = st.text_input("Senha", type="password", placeholder="admin123")
+        user = st.text_input("Usuário")
+        pwd = st.text_input("Senha", type="password")
 
-        st.text(".")
+        
         if st.button("Entrar", width="stretch"):
+            #user, pwd = "admin", "admin123"
+            usuario = login(user, pwd)
+
+            if usuario:
+                st.session_state.logged = True
+                st.session_state.usuario_logado = {
+                    "id": usuario.id_usuario,
+                    "username": usuario.username
+                }
+                st.rerun()
+            else:
+                st.error("Login inválido")
+
+        if st.button("Testar", width="stretch"):
             user, pwd = "admin", "admin123"
             usuario = login(user, pwd)
 
@@ -30,5 +44,6 @@ def render():
                 st.rerun()
             else:
                 st.error("Login inválido")
+        
 
     

@@ -1,2 +1,5 @@
 [server]
 fileWatcherType = "none"
+
+[client]
+showSidebarNavigation = false

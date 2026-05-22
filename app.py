@@ -3,13 +3,14 @@ from db.db import init_db
 from PIL import Image
 
 
-st.set_page_config(page_title="Valquíria PDV", layout="wide",page_icon="./img/banner_valquiria.png",)
+st.set_page_config(page_title="Valquíria PDV", layout="wide",page_icon="./img/banner_valquiria.png")
 init_db()
 
 #customização com css
 st.markdown(
     """
     <style>
+    
 
     div[data-testid="stFormSubmitButton"] > button {
         margin-top: 2px;
