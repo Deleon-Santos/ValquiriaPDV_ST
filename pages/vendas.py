@@ -6,7 +6,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 def render():
-    st.header("Vendas PDV")
+    st.title("Vendas PDV")
     # configurações iniciais
     usuario = st.session_state.usuario_logado
     id_venda = pegar_n_venda_atual(usuario)
@@ -190,7 +190,7 @@ def render():
                 )
 
                 st.markdown(
-                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px'> {preco_unit:.2f}</div>",
+                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:3px'> {preco_unit:.2f}</div>",
                     unsafe_allow_html=True
                 )
             with preco_comb:
@@ -200,18 +200,18 @@ def render():
                 )
                 
                 st.markdown(
-                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:5px; margin-bottom:5px'> {total_item:.2f}</div>",
+                    f"<div style='text-align:right; font-size:25px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px; background-color: light-silver; padding:3px; margin-bottom:5px'> {total_item:.2f}</div>",
                     unsafe_allow_html=True)
 
         col1 , col2 = st.columns([3,1])
         with col1:
             st.markdown(
-            f"<div style='text-align:left; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;padding:10px'>{desc_item}</div>",
+            f"<div style='text-align:left; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;padding:1px 10px'>{desc_item}</div>",
             unsafe_allow_html=True)
 
         with col2:
             st.markdown(
-                f"<div style='text-align:right; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;  padding:10px;font-weight: bolder'> {total_venda:.2f}</div>",
+                f"<div style='text-align:right; font-size:40px;border:.5px solid silver;border-bottom:3px solid silver;border-right:3px solid silver; border-radius: 10px;  padding:1px 10px;font-weight: bolder'> {total_venda:.2f}</div>",
                 unsafe_allow_html=True)
 
 

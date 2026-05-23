@@ -6,7 +6,7 @@ from utils.impressao import gerar_cupom_pdf
 
 
 def render():
-    st.header("Pesquisa de Vendas")
+    st.title("Pesquisa de Vendas")
     tab1, tab2 = st.tabs([ "Venda por Período","Dashboard de Vendas"])
 
     with tab1:

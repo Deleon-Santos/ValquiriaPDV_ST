@@ -45,5 +45,9 @@ def render():
             else:
                 st.error("Login inválido")
         
-
-    
+#     st.markdown(
+#     """
+#     <p style="font-size: 0.9em; color: gray; margin-top: 10px;">Softwares Livres Valquiria PDV - DeleonSantos todos os direitos reservados</p>
+#     """,
+#     unsafe_allow_html=True
+# )
